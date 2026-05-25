@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"io"
 	"strings"
 
 	exporters "github.com/MickMake/GoTravel/export"
@@ -10,10 +9,10 @@ import (
 )
 
 type exportArgs struct {
-	dbPath     string
-	force      bool
-	startRaw   string
-	stopRaw    string
+	dbPath      string
+	force       bool
+	startRaw    string
+	stopRaw     string
 	positionals []string
 }
 
@@ -99,5 +98,3 @@ func parseExportArgs(args []string) (exportArgs, error) {
 	}
 	return parsed, nil
 }
-
-var _ io.Writer
