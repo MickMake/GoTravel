@@ -95,6 +95,7 @@ Export with a date range:
 
 ```bash
 GoTravel export gator output.csv --start 2025-05 --stop 2025-06
+GoTravel export gator output.csv --start "2025-05-02 13" --stop "2025-05-02 13:30"
 ```
 
 Export staged rows to GPX:
@@ -131,8 +132,12 @@ Supported date/time filters:
 YYYY
 YYYY-MM
 YYYY-MM-DD
+YYYY-MM-DD HH
+YYYY-MM-DD HH:MM
 YYYY-MM-DD HH:MM:SS
 ```
+
+For `--stop`, partial values include the full specified period. For example, `--stop "2025-05-02 13"` includes that full hour.
 
 ## Repository Layout
 
