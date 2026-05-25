@@ -17,6 +17,8 @@ func run(args []string) error {
 		return usage()
 	}
 	switch args[0] {
+	case "db":
+		return runDB(args[1:])
 	case "import":
 		return runImport(args[1:])
 	case "export":
@@ -29,9 +31,12 @@ func run(args []string) error {
 }
 
 func usage() error {
-	fmt.Fprintln(os.Stderr, `GoTravel 0.2
+	fmt.Fprintln(os.Stderr, `GoTravel 0.3
 
 Usage:
+  GoTravel db init [--db gotravel.sqlite] [--force]
+  GoTravel db export [--db gotravel.sqlite] [--force] <filename>
+  GoTravel db import [--db gotravel.sqlite] [--force] <filename>
   GoTravel import [--db gotravel.sqlite] [--force] <gator|google> <input.csv> [...]
   GoTravel import [--db gotravel.sqlite] [--force] <gator|google> -
   GoTravel export [--db gotravel.sqlite] [--force] <output.csv|-> [--start value] [--stop value]
