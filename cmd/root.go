@@ -35,6 +35,7 @@ func usage() error {
 
 Usage:
   GoTravel db init [--db gotravel.sqlite] [--force]
+  GoTravel db verify [--db gotravel.sqlite]
   GoTravel db export [--db gotravel.sqlite] [--force] <filename>
   GoTravel db import [--db gotravel.sqlite] [--force] <filename>
   GoTravel import [--db gotravel.sqlite] [--force] <gator|google> <input.csv> [...]
