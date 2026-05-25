@@ -175,6 +175,8 @@ func ParsePartialDateTime(value string, isStop bool) (*time.Time, error) {
 		{"2006", func(t time.Time) time.Time { return t.AddDate(1, 0, 0).Add(-time.Second) }},
 		{"2006-01", func(t time.Time) time.Time { return t.AddDate(0, 1, 0).Add(-time.Second) }},
 		{"2006-01-02", func(t time.Time) time.Time { return t.AddDate(0, 0, 1).Add(-time.Second) }},
+		{"2006-01-02 15", func(t time.Time) time.Time { return t.Add(time.Hour).Add(-time.Second) }},
+		{"2006-01-02 15:04", func(t time.Time) time.Time { return t.Add(time.Minute).Add(-time.Second) }},
 		{timeLayout, func(t time.Time) time.Time { return t }},
 	}
 	for _, item := range layouts {
@@ -185,5 +187,5 @@ func ParsePartialDateTime(value string, isStop bool) (*time.Time, error) {
 			return &t, nil
 		}
 	}
-	return nil, fmt.Errorf("invalid date/time %q; expected YYYY, YYYY-MM, YYYY-MM-DD, or YYYY-MM-DD HH:MM:SS", value)
+	return nil, fmt.Errorf("invalid date/time %q; expected YYYY, YYYY-MM, YYYY-MM-DD, YYYY-MM-DD HH, YYYY-MM-DD HH:MM, or YYYY-MM-DD HH:MM:SS", value)
 }

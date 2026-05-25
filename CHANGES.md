@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5
+
+- Added `GoTravel export gpx <output.gpx|->` to export staged points as GPX 1.1.
+- GPX export writes one track containing one segment ordered by staged point timestamp.
+- GPX export does not perform route matching, trip segmentation, dwell-time calculation, or provider calls.
+- Documented GPX export in `COMMANDS.md` and `README.md`.
+
 ## 0.4
 
 - Added `GoTravel db init` to initialise the SQLite database and required schema.

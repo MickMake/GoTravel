@@ -14,11 +14,12 @@ Current focus:
 - Preserve source metadata.
 - Record corrupt rows when forced.
 - Export staged rows to CSV/stdout.
+- Export staged rows to GPX.
 
 Reserved for later:
 
 - Google import.
-- GPX export.
+- Audit export.
 - KML export.
 - OpenRouteService/OSRM route analysis.
 - Reports and maps.
@@ -78,35 +79,49 @@ Continue past corrupt rows:
 GoTravel import --force gator input.csv
 ```
 
-Export staged rows:
+Export staged rows to Gator-style CSV:
 
 ```bash
-GoTravel export output.csv
+GoTravel export gator output.csv
 ```
 
 Export to stdout:
 
 ```bash
-GoTravel export -
+GoTravel export gator -
 ```
 
 Export with a date range:
 
 ```bash
-GoTravel export output.csv --start 2025-05 --stop 2025-06
+GoTravel export gator output.csv --start 2025-05 --stop 2025-06
+```
+
+Export staged rows to GPX:
+
+```bash
+GoTravel export gpx output.gpx
+GoTravel export gpx output.gpx --start 2025-05 --stop 2025-06
 ```
 
 Overwrite an existing output file:
 
 ```bash
-GoTravel export --force output.csv
+GoTravel export gator --force output.csv
+GoTravel export gpx --force output.gpx
 ```
 
-## Current Export Columns
+## Current Gator Export Columns
 
 ```csv
 dt,lat,lng,altitude,angle,speed,params
 ```
+
+## GPX Export
+
+`GoTravel export gpx` writes GPX 1.1 with one track and one segment from staged points ordered by timestamp.
+
+It does not perform route matching, trip segmentation, dwell-time calculation, or provider calls.
 
 ## Date Filters
 
