@@ -12,20 +12,23 @@ The project must remain boring, inspectable, and easy to run on private infrastr
 
 Required now:
 
+- Initialise and verify the SQLite staging database.
 - Import multiple CSV files.
-- Support `gator` first.
-- Reserve `google` as a future importer.
+- Support `gator` import first.
+- Reserve `google` as a future importer/exporter.
 - Support stdin import with `-`.
 - Store normalised records in SQLite.
 - Preserve import metadata.
-- Detect duplicates.
+- Detect and skip duplicate points.
 - Abort on corrupt input unless `--force` is used.
-- Export staged rows to CSV/stdout with optional date filtering.
+- Export staged rows to Gator-style CSV/stdout with optional date filtering.
+- Export staged rows to GPX 1.1/stdout with optional date filtering.
 - Refuse to overwrite output files unless `--force` is used.
 
 Not required yet:
 
-- GPX export.
+- Google CSV import/export implementation.
+- Audit export.
 - KML export.
 - ORS/OSRM route analysis.
 - HTML reports.
@@ -77,18 +80,52 @@ imported_at  time GoTravel imported the row
 point_hash   duplicate-detection hash
 ```
 
-## 6. Import Behaviour
+## 6. Database Behaviour
+
+Initialise the database:
+
+```text
+GoTravel db init [--db gotravel.sqlite] [--force]
+```
+
+- Create the SQLite database and required schema if missing.
+- Be safe to run repeatedly.
+- With `--force`, replace the existing database file before initialising a fresh schema.
+
+Verify the database:
+
+```text
+GoTravel db verify [--db gotravel.sqlite]
+```
+
+- Validate that the configured file is a usable SQLite database.
+- Validate that required GoTravel tables are present.
+
+Whole-database copy/restore commands are supported but are not point import/export commands:
+
+```text
+GoTravel db export [--db gotravel.sqlite] [--force] <filename>
+GoTravel db import [--db gotravel.sqlite] [--force] <filename>
+```
+
+- `db export` copies the whole SQLite database to another file.
+- `db import` restores a whole SQLite database file.
+- These commands must not transform rows or apply GPS date filters.
+
+## 7. Import Behaviour
 
 Default import behaviour:
 
 ```text
 GoTravel import gator input.csv
+GoTravel import gator input1.csv input2.csv
 ```
 
 - Abort on the first corrupt row.
 - Roll back the current file import.
 - Report source file, source line, and reason.
 - Do not partially commit that file.
+- Skip duplicate points using the stable point hash.
 
 Forced import behaviour:
 
@@ -99,6 +136,7 @@ GoTravel import --force gator input.csv
 - Skip corrupt rows.
 - Record corrupt rows in `import_errors`.
 - Commit valid rows.
+- Skip duplicate points using the stable point hash.
 - Print/import summary with seen/imported/skipped counts.
 
 Stdin import:
@@ -111,35 +149,50 @@ GoTravel import gator -
 - Store `source_file` as `<stdin>`.
 - Preserve actual source line numbers.
 
-## 7. Export Behaviour
+## 8. Export Behaviour
 
-Default export behaviour:
-
-```text
-GoTravel export output.csv
-```
-
-- Refuse to overwrite an existing output file.
-- Support date filtering with `--start` and `--stop`.
-
-Forced export behaviour:
+The export format must be explicit:
 
 ```text
-GoTravel export --force output.csv
+GoTravel export <gator|google|gpx> <output.csv|output.gpx|-> [--db gotravel.sqlite] [--force] [--start VALUE] [--stop VALUE]
 ```
 
-- Allow overwriting the output file.
-
-Stdout export:
+Gator CSV export:
 
 ```text
-GoTravel export -
+GoTravel export gator output.csv
+GoTravel export gator -
 ```
 
-- Write to stdout.
-- Never apply overwrite checks to stdout.
+- Export staged rows using the current Gator-style staged CSV columns.
+- Refuse to overwrite an existing output file unless `--force` is supplied.
+- Write to stdout when output is `-`.
 
-## 8. Date Filter Behaviour
+GPX export:
+
+```text
+GoTravel export gpx output.gpx
+GoTravel export gpx -
+```
+
+- Generate GPX 1.1.
+- Emit one track containing one segment ordered by GPS timestamp.
+- Preserve timestamp as GPX point time.
+- Use latitude and longitude as GPX point attributes.
+- Include elevation from the staged altitude value.
+- Do not invent routes, stops, names, dwell times, or trip segmentation.
+- Do not call routing providers.
+
+Google export:
+
+```text
+GoTravel export google output.csv
+```
+
+- Reserved command shape only.
+- Must return a clear not-implemented error until explicitly implemented.
+
+## 9. Date Filter Behaviour
 
 Export date filters must support partial precision:
 
@@ -147,12 +200,23 @@ Export date filters must support partial precision:
 YYYY
 YYYY-MM
 YYYY-MM-DD
+YYYY-MM-DD HH
+YYYY-MM-DD HH:MM
 YYYY-MM-DD HH:MM:SS
 ```
 
-The CLI may accept additional compatible timestamp formats later, but the above are the minimum required forms.
+For `--start`, partial values resolve to the beginning of the specified period.
 
-## 9. Storage Rules
+For `--stop`, partial values include the full specified period. For example:
+
+```text
+2025-05          includes all of May 2025
+2025-05-02       includes that full day
+2025-05-02 13    includes 13:00:00 through 13:59:59
+2025-05-02 13:30 includes 13:30:00 through 13:30:59
+```
+
+## 10. Storage Rules
 
 SQLite is the staging store.
 
@@ -172,7 +236,7 @@ dt + lat + lng + altitude + angle + speed + params
 
 Do not include provenance fields such as `source_file`, `source_line`, or `imported_at` in the hash.
 
-## 10. Routing Scope
+## 11. Routing Scope
 
 The `routing/` package is reserved for future route processing.
 
@@ -183,18 +247,22 @@ Supported future providers:
 
 The interface must remain provider-neutral. Do not hard-code the whole project around one routing provider.
 
-## 11. Presentation Scope
+## 12. Presentation Scope
+
+Current presentation/export formats:
+
+- Gator-style staged CSV
+- GPX 1.1
 
 Future presentation formats may include:
 
-- CSV summaries
-- GPX
+- Audit CSV summaries
 - KML
 - HTML map reports
 
-Do not implement these until the staged import/export path is solid and tested.
+Do not implement these until explicitly requested and the staged import/export path remains solid and tested.
 
-## 12. Change Control
+## 13. Change Control
 
 Any implementation agent must:
 
