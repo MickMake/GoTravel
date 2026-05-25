@@ -75,14 +75,16 @@ With `--force`:
 ## Export
 
 ```bash
-GoTravel export [--db gotravel.sqlite] [--force] <output.csv|-> [--start VALUE] [--stop VALUE]
+GoTravel export <gator|google|gpx> <output.csv|output.gpx|-> [--db gotravel.sqlite] [--force] [--start VALUE] [--stop VALUE]
 ```
 
 ### Export Arguments
 
 ```text
-<output.csv>   Output CSV file path.
--              Write to stdout.
+<gator|google|gpx>   Export format. gator and gpx are active; google is reserved.
+<output.csv>         Output CSV file path for gator/google export.
+<output.gpx>         Output GPX file path for gpx export.
+-                    Write to stdout.
 ```
 
 ### Export Options
@@ -105,13 +107,19 @@ YYYY-MM-DD
 YYYY-MM-DD HH:MM:SS
 ```
 
-### Export Output Columns
+### Gator Export Output Columns
 
 Current staged CSV export columns:
 
 ```csv
 dt,lat,lng,altitude,angle,speed,params
 ```
+
+### GPX Export Behaviour
+
+`GoTravel export gpx` writes a GPX 1.1 file containing one track with one segment, ordered by staged point timestamp.
+
+It does not perform route matching, trip segmentation, dwell-time calculation, or provider calls.
 
 ## Safety Rules
 
@@ -126,10 +134,8 @@ dt,lat,lng,altitude,angle,speed,params
 These are likely future commands but are not current required behaviour:
 
 ```bash
-GoTravel export gator output.csv
 GoTravel export google output.csv
 GoTravel export audit output.csv
-GoTravel export gpx output.gpx
 GoTravel analyse routes
 GoTravel report trips
 GoTravel report map
