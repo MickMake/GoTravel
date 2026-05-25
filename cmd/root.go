@@ -40,7 +40,7 @@ Usage:
   GoTravel db import [--db gotravel.sqlite] [--force] <filename>
   GoTravel import [--db gotravel.sqlite] [--force] <gator|google> <input.csv> [...]
   GoTravel import [--db gotravel.sqlite] [--force] <gator|google> -
-  GoTravel export [--db gotravel.sqlite] [--force] <output.csv|-> [--start value] [--stop value]
+  GoTravel export <gator|google> <output.csv|-> [--db gotravel.sqlite] [--force] [--start value] [--stop value]
 `)
 	return nil
 }
