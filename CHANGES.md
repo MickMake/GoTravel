@@ -5,7 +5,8 @@
 - Added `GoTravel export gpx <output.gpx|->` to export staged points as GPX 1.1.
 - GPX export writes one track containing one segment ordered by staged point timestamp.
 - GPX export does not perform route matching, trip segmentation, dwell-time calculation, or provider calls.
-- Documented GPX export in `COMMANDS.md` and `README.md`.
+- Added partial time precision for export date filters: `YYYY-MM-DD HH`, `YYYY-MM-DD HH:MM`, and `YYYY-MM-DD HH:MM:SS`.
+- Documented GPX export and partial time filters in `COMMANDS.md` and `README.md`.
 
 ## 0.4
 
