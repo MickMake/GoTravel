@@ -3,6 +3,7 @@
 ## 0.4
 
 - Added `GoTravel db init` to initialise the SQLite database and required schema.
+- Added `GoTravel db verify` to validate that a configured database is usable and has required GoTravel tables.
 - Added `GoTravel db export <filename>` to copy the whole SQLite database to a backup/transfer file.
 - Added `GoTravel db import <filename>` to restore a whole GoTravel SQLite database file.
 - Added database validation for import/export operations.

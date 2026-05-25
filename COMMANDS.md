@@ -6,6 +6,7 @@ This file defines the intended command-line interface. If code behaviour differs
 
 ```bash
 GoTravel db init [--db gotravel.sqlite] [--force]
+GoTravel db verify [--db gotravel.sqlite]
 GoTravel db export [--db gotravel.sqlite] [--force] <filename>
 GoTravel db import [--db gotravel.sqlite] [--force] <filename>
 ```
@@ -26,6 +27,8 @@ GoTravel db import [--db gotravel.sqlite] [--force] <filename>
 ### Database Behaviour
 
 `GoTravel db init` creates the SQLite database and required schema if missing. It is safe to run repeatedly. With `--force`, it replaces the existing database file before initialising a fresh schema.
+
+`GoTravel db verify` validates that the configured database is a usable SQLite database and contains the required GoTravel tables.
 
 `GoTravel db export <filename>` copies the whole configured SQLite database to `<filename>`. It refuses to overwrite an existing output file unless `--force` is supplied. It does not apply GPS date filters and does not transform rows.
 
