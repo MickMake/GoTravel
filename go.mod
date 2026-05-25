@@ -1,4 +1,4 @@
-module gotravel
+module github.com/MickMake/GoTravel
 
 go 1.22
 

@@ -1,0 +1,10 @@
+name: gator
+type: import
+columns:
+  dt: dt
+  lat: lat
+  lng: lng
+  altitude: altitude
+  angle: angle
+  speed: speed
+  params: params

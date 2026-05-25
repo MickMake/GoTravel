@@ -1,0 +1,10 @@
+name: csv
+type: export
+columns:
+  - dt
+  - lat
+  - lng
+  - altitude
+  - angle
+  - speed
+  - params

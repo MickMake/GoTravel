@@ -1,10 +1,22 @@
-# Changes
+# Changelog
+
+## 0.2
+
+- Split GoTravel into `cmd`, `import`, `export`, `routing`, `profiles`, `storage`, `examples`, and `tests`.
+- Renamed the routing concept to `routing` instead of `ors`.
+- Added canonical internal `Point` model.
+- Added source metadata: `source_file`, `source_line`, and `imported_at`.
+- Added `import_runs` table.
+- Added `import_errors` table.
+- Added `--force` support for imports: skip corrupt rows, store errors, and commit valid rows.
+- Added default import safety: corrupt rows abort the file import unless `--force` is used.
+- Added default export safety: existing output files are not overwritten unless `--force` is used.
+- Preserved staged CSV export behaviour.
+- Added basic tests and fixtures.
 
 ## 0.1
 
-- Converted initial direct CSV-to-GPX concept into staged CSV-to-SQLite import.
-- Added `import` command for `gator` CSV files.
-- Reserved `google` importer command but intentionally left it unimplemented.
-- Added SQLite storage with de-duplication via stable point hash.
-- Added `export` command to write stored columns as CSV.
-- Added partial date filtering for export.
+- Initial simple staged import/export implementation.
+- Added Gator CSV import into SQLite.
+- Added staged CSV export from SQLite.
+- Added date/time filtering for export.

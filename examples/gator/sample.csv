@@ -1,0 +1,3 @@
+dt,lat,lng,altitude,angle,speed,params
+2025-05-01 10:11:05,-33.74158,151.047845,189,73,0,"gpslev=17, gsmlev=4, hdop=0.7"
+2025-05-01 10:12:05,-33.74159,151.047900,190,74,4,"gpslev=17, gsmlev=4, hdop=0.8"
