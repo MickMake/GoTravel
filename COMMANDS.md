@@ -93,7 +93,7 @@ dt,lat,lng,altitude,angle,speed,params
 These are likely future commands but are not current required behaviour:
 
 ```bash
-GoTravel export-gpx output.gpx
+GoTravel export gpx output.gpx
 GoTravel analyse routes
 GoTravel report trips
 GoTravel report map
