@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3
+
+- Added `AUTHORITATIVE_SPECIFICATION.md` as the top-level behavioural specification.
+- Added `COMMANDS.md` to lock down current CLI syntax and safety rules.
+- Added `CODEX.md` to constrain future Codex work.
+- Added `AGENTS.md` for general AI/code-agent workflow rules.
+- Added updated `README.md` aligned with the current staged import/export scope.
+- Added `TRACKER_SIGNALS.md.template` to avoid overwriting an existing tracker-signal specification.
+
 ## 0.2
 
 - Split GoTravel into `cmd`, `import`, `export`, `routing`, `profiles`, `storage`, `examples`, and `tests`.

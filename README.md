@@ -1,8 +1,107 @@
 # GoTravel
 
-GoTravel is a deliberately small GPS import/export tool.
+GoTravel is a deliberately simple command-line tool for importing tracker/GPS CSV data into SQLite, then exporting or analysing that staged data.
 
-Version 0.2 focuses on staging Gator CSV files into SQLite and exporting staged rows back to CSV. GPX, routing, reports, and map views are reserved for later versions.
+The project favours boring, inspectable workflows over clever machinery. It is intended to run locally or on private infrastructure without requiring cloud services.
+
+## Current Status
+
+Current focus:
+
+- Import Gator CSV data.
+- Stage normalised points in SQLite.
+- Preserve source metadata.
+- Record corrupt rows when forced.
+- Export staged rows to CSV/stdout.
+
+Reserved for later:
+
+- Google import.
+- GPX export.
+- KML export.
+- OpenRouteService/OSRM route analysis.
+- Reports and maps.
+
+## Commands
+
+Import one or more Gator CSV files:
+
+```bash
+GoTravel import gator input.csv
+GoTravel import gator input1.csv input2.csv
+```
+
+Import from stdin:
+
+```bash
+cat input.csv | GoTravel import gator -
+```
+
+Use a specific database:
+
+```bash
+GoTravel import --db gotravel.sqlite gator input.csv
+```
+
+Continue past corrupt rows:
+
+```bash
+GoTravel import --force gator input.csv
+```
+
+Export staged rows:
+
+```bash
+GoTravel export output.csv
+```
+
+Export to stdout:
+
+```bash
+GoTravel export -
+```
+
+Export with a date range:
+
+```bash
+GoTravel export output.csv --start 2025-05 --stop 2025-06
+```
+
+Overwrite an existing output file:
+
+```bash
+GoTravel export --force output.csv
+```
+
+## Current Export Columns
+
+```csv
+dt,lat,lng,altitude,angle,speed,params
+```
+
+## Date Filters
+
+Supported date/time filters:
+
+```text
+YYYY
+YYYY-MM
+YYYY-MM-DD
+YYYY-MM-DD HH:MM:SS
+```
+
+## Repository Layout
+
+```text
+cmd/        CLI command handling
+examples/   generic examples
+export/     exporting code
+import/     importing code
+profiles/   import/export profile files
+routing/    future OpenRouteService/OSRM support
+storage/    SQLite and file handling
+tests/      tests and fixtures
+```
 
 ## Build
 
@@ -11,74 +110,21 @@ go mod tidy
 go build -o GoTravel .
 ```
 
-## Import Gator CSV
+## Test
 
 ```bash
-./GoTravel import gator examples/gator/sample.csv
+go test ./...
 ```
 
-Use a custom database:
+## Agent/Codex Notes
 
-```bash
-./GoTravel import --db gotravel.sqlite gator examples/gator/sample.csv
-```
-
-Read from stdin:
-
-```bash
-cat examples/gator/sample.csv | ./GoTravel import gator -
-```
-
-By default, corrupt input aborts the file import and commits nothing for that source.
-
-Use `--force` to skip corrupt rows, store them in `import_errors`, and commit valid rows:
-
-```bash
-./GoTravel import --force gator messy.csv
-```
-
-## Export staged CSV
-
-```bash
-./GoTravel export output.csv
-```
-
-Refuse to overwrite unless `--force` is used:
-
-```bash
-./GoTravel export --force output.csv
-```
-
-Write to stdout:
-
-```bash
-./GoTravel export -
-```
-
-Filter by date/time:
-
-```bash
-./GoTravel export output.csv --start 2025
-./GoTravel export output.csv --start 2025-05
-./GoTravel export output.csv --start 2025-05-01 --stop 2025-05-31
-./GoTravel export output.csv --start "2025-05-01 10:11:05" --stop "2025-05-01 17:00:00"
-```
-
-## Current staged export columns
-
-```csv
-dt,lat,lng,altitude,angle,speed,params
-```
-
-## Layout
+Before using Codex or another code agent, read:
 
 ```text
-cmd/       CLI commands
-examples/  generic examples
-export/    exporting code
-import/    importing code
-profiles/  import/export profile files
-routing/   OpenRouteService/OSRM placeholders
-storage/   SQLite and file handling
-tests/     test framework and fixtures
+AUTHORITATIVE_SPECIFICATION.md
+COMMANDS.md
+CODEX.md
+AGENTS.md
 ```
+
+These files exist to stop GoTravel turning into a cathedral with a GPS antenna.
