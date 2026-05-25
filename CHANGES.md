@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4
+
+- Added `GoTravel db init` to initialise the SQLite database and required schema.
+- Added `GoTravel db export <filename>` to copy the whole SQLite database to a backup/transfer file.
+- Added `GoTravel db import <filename>` to restore a whole GoTravel SQLite database file.
+- Added database validation for import/export operations.
+- Documented database commands in `COMMANDS.md` and `README.md`.
+
 ## 0.3
 
 - Added `AUTHORITATIVE_SPECIFICATION.md` as the top-level behavioural specification.
