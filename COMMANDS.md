@@ -2,6 +2,35 @@
 
 This file defines the intended command-line interface. If code behaviour differs from this file, treat that as a bug unless `AUTHORITATIVE_SPECIFICATION.md` has deliberately changed.
 
+## Database
+
+```bash
+GoTravel db init [--db gotravel.sqlite] [--force]
+GoTravel db export [--db gotravel.sqlite] [--force] <filename>
+GoTravel db import [--db gotravel.sqlite] [--force] <filename>
+```
+
+### Database Arguments
+
+```text
+<filename>   SQLite database file to export to or import from.
+```
+
+### Database Options
+
+```text
+--db PATH     SQLite database path. Defaults to gotravel.sqlite.
+--force       Allow destructive/overwrite behaviour where applicable.
+```
+
+### Database Behaviour
+
+`GoTravel db init` creates the SQLite database and required schema if missing. It is safe to run repeatedly. With `--force`, it replaces the existing database file before initialising a fresh schema.
+
+`GoTravel db export <filename>` copies the whole configured SQLite database to `<filename>`. It refuses to overwrite an existing output file unless `--force` is supplied. It does not apply GPS date filters and does not transform rows.
+
+`GoTravel db import <filename>` restores/copies a whole GoTravel SQLite database into the configured database path. It validates the input as a usable GoTravel database and refuses to overwrite an existing target unless `--force` is supplied. It does not merge or transform rows.
+
 ## Import
 
 ```bash
@@ -87,12 +116,16 @@ dt,lat,lng,altitude,angle,speed,params
 - Never apply overwrite checks when output is `-`.
 - Never silently ignore corrupt input.
 - Never silently change command syntax.
+- Database import/export commands must not transform staged rows.
 
 ## Reserved Future Commands
 
 These are likely future commands but are not current required behaviour:
 
 ```bash
+GoTravel export gator output.csv
+GoTravel export google output.csv
+GoTravel export audit output.csv
 GoTravel export gpx output.gpx
 GoTravel analyse routes
 GoTravel report trips
