@@ -104,6 +104,8 @@ Supported partial date/time formats:
 YYYY
 YYYY-MM
 YYYY-MM-DD
+YYYY-MM-DD HH
+YYYY-MM-DD HH:MM
 YYYY-MM-DD HH:MM:SS
 ```
 
