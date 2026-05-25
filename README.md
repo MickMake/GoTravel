@@ -8,6 +8,7 @@ The project favours boring, inspectable workflows over clever machinery. It is i
 
 Current focus:
 
+- Initialise, export, and import the SQLite staging database.
 - Import Gator CSV data.
 - Stage normalised points in SQLite.
 - Preserve source metadata.
@@ -23,6 +24,27 @@ Reserved for later:
 - Reports and maps.
 
 ## Commands
+
+Initialise the database:
+
+```bash
+GoTravel db init
+GoTravel db init --db gotravel.sqlite
+```
+
+Export a whole database copy:
+
+```bash
+GoTravel db export backup.sqlite
+GoTravel db export --force backup.sqlite
+```
+
+Import/restore a whole database copy:
+
+```bash
+GoTravel db import backup.sqlite
+GoTravel db import --force backup.sqlite
+```
 
 Import one or more Gator CSV files:
 
