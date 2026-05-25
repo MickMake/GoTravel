@@ -11,12 +11,14 @@ import (
 
 func runDB(args []string) error {
 	if len(args) == 0 {
-		return fmt.Errorf("db requires a subcommand: init, export, or import")
+		return fmt.Errorf("db requires a subcommand: init, verify, export, or import")
 	}
 
 	switch args[0] {
 	case "init":
 		return runDBInit(args[1:])
+	case "verify":
+		return runDBVerify(args[1:])
 	case "export":
 		return runDBExport(args[1:])
 	case "import":
