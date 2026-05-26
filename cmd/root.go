@@ -31,7 +31,7 @@ func run(args []string) error {
 }
 
 func usage() error {
-	fmt.Fprint(os.Stderr, `GoTravel 0.4
+	fmt.Fprint(os.Stderr, `GoTravel 0.5
 
 Usage:
   GoTravel db init [--db gotravel.sqlite] [--force]
