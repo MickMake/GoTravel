@@ -22,7 +22,7 @@ func runExport(args []string) error {
 		return err
 	}
 	if len(parsed.positionals) != 2 {
-		return fmt.Errorf("export requires a format and output path: GoTravel export <gator|google> <output.csv|-> [--db path] [--force] [--start value] [--stop value]")
+		return fmt.Errorf("export requires a format and output path: GoTravel export <gator|google|gpx> <output.csv|output.gpx|-> [--db path] [--force] [--start value] [--stop value]")
 	}
 
 	format := parsed.positionals[0]
