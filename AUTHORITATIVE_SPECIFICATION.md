@@ -30,7 +30,7 @@ Not required yet:
 - Google CSV import/export implementation.
 - Audit export.
 - KML export.
-- ORS/OSRM route analysis.
+- ORS/OSRM/Valhalla route analysis.
 - HTML reports.
 - Web UI.
 - Background services.
@@ -244,8 +244,11 @@ Supported future providers:
 
 - OpenRouteService
 - OSRM
+- Valhalla
 
 The interface must remain provider-neutral. Do not hard-code the whole project around one routing provider.
+
+The core routing interface must expose only operations shared by all supported providers. Provider-specific features must remain behind optional extensions, provider-specific packages, or raw provider responses until explicitly approved.
 
 ## 12. Presentation Scope
 
