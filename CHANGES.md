@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Added a provider-neutral routing framework with stub providers (`noop`, `ors`, `osrm`, `valhalla`), shared routing contracts/types, and registry/tests with no live network clients yet.
 - Documented Valhalla as a planned routing provider alongside OpenRouteService and OSRM.
 - Clarified that the core routing interface should expose only operations shared by all supported routing providers.
 
