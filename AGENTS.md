@@ -92,8 +92,11 @@ Routing providers must be pluggable:
 
 - OpenRouteService
 - OSRM
+- Valhalla
 
 Do not hard-code routing assumptions into import/export/storage.
+
+The core routing interface must expose only operations shared by all supported providers. Provider-specific features must remain behind optional extensions, provider-specific packages, or raw provider responses until explicitly approved.
 
 ## Before Submitting Changes
 
