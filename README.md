@@ -21,7 +21,7 @@ Reserved for later:
 - Google import.
 - Audit export.
 - KML export.
-- OpenRouteService/OSRM route analysis.
+- OpenRouteService/OSRM/Valhalla route analysis.
 - Reports and maps.
 
 ## Commands
@@ -147,7 +147,7 @@ examples/   generic examples
 export/     exporting code
 import/     importing code
 profiles/   import/export profile files
-routing/    future OpenRouteService/OSRM support
+routing/    future OpenRouteService/OSRM/Valhalla support
 storage/    SQLite and file handling
 tests/      tests and fixtures
 ```
