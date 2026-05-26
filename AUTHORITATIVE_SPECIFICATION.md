@@ -250,6 +250,8 @@ The interface must remain provider-neutral. Do not hard-code the whole project a
 
 The core routing interface must expose only operations shared by all supported providers. Provider-specific features must remain behind optional extensions, provider-specific packages, or raw provider responses until explicitly approved.
 
+`ROUTING_PROVIDERS.md` defines the planned provider contract, core interface, common provider calls, and non-goals. Use it as the routing implementation reference before changing `routing/` code.
+
 ## 12. Presentation Scope
 
 Current presentation/export formats:
