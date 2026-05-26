@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Documented Valhalla as a planned routing provider alongside OpenRouteService and OSRM.
+- Clarified that the core routing interface should expose only operations shared by all supported routing providers.
+
 ## 0.5
 
 - Added `GoTravel export gpx <output.gpx|->` to export staged points as GPX 1.1.
