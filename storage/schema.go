@@ -42,6 +42,38 @@ CREATE TABLE IF NOT EXISTS import_errors (
     FOREIGN KEY(import_run_id) REFERENCES import_runs(id)
 );
 
+CREATE TABLE IF NOT EXISTS route_match_runs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    provider TEXT NOT NULL,
+    profile TEXT NOT NULL,
+    status TEXT NOT NULL,
+    source_point_count INTEGER NOT NULL,
+    geometry TEXT,
+    geometry_format TEXT,
+    distance_meters REAL,
+    duration_seconds REAL,
+    confidence REAL,
+    warnings_json TEXT,
+    raw_response BLOB,
+    matched_at TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    source_filter_start TEXT,
+    source_filter_end TEXT
+);
+
+CREATE TABLE IF NOT EXISTS route_match_points (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    route_match_run_id INTEGER NOT NULL,
+    point_id INTEGER NOT NULL,
+    sequence INTEGER NOT NULL,
+    FOREIGN KEY(route_match_run_id) REFERENCES route_match_runs(id),
+    FOREIGN KEY(point_id) REFERENCES points(id),
+    UNIQUE(route_match_run_id, sequence)
+);
+
 CREATE INDEX IF NOT EXISTS idx_points_dt ON points(dt);
 CREATE INDEX IF NOT EXISTS idx_points_source ON points(source_file, source_line);
+CREATE INDEX IF NOT EXISTS idx_route_match_runs_matched_at ON route_match_runs(matched_at);
+CREATE INDEX IF NOT EXISTS idx_route_match_runs_provider ON route_match_runs(provider, profile);
+CREATE INDEX IF NOT EXISTS idx_route_match_points_run ON route_match_points(route_match_run_id, sequence);
 `
