@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"strings"
 	"testing"
 	"time"
 
@@ -92,7 +93,7 @@ func TestSaveRouteMatchRunRejectsMismatchedPointIDs(t *testing.T) {
 
 	trace := routing.EnrichedTrace{SourcePointCount: 2, MatchedAt: time.Unix(1700001000, 0)}
 	_, err = store.SaveRouteMatchRun(context.Background(), trace, []int64{10}, nil, nil)
-	if err == nil || !errors.Is(err, sql.ErrNoRows) && err.Error() == "" {
+	if err == nil || !strings.Contains(err.Error(), "1 point IDs for 2 source points") {
 		t.Fatalf("expected mismatch error, got %v", err)
 	}
 }
