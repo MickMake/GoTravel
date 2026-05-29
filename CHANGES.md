@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Added OSRM provider usage examples and an interface conformance check.
 - Added a provider-neutral routing framework with providers (`noop`, `ors`, `osrm`, `valhalla`), shared routing contracts/types, and registry/tests.
 - Implemented the OSRM HTTP provider client for health, route, trace matching, snapping, and matrix operations using provider-neutral result types and preserved raw responses.
 - Hardened OSRM provider validation for route, trace-matching, and matrix requests, including matrix response dimension checks.
