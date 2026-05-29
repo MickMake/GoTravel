@@ -123,6 +123,43 @@ dt,lat,lng,altitude,angle,speed,params
 
 It does not perform route matching, trip segmentation, dwell-time calculation, or provider calls.
 
+## Route Matching
+
+```bash
+GoTravel route-match run [--db gotravel.sqlite] [--provider noop|osrm] [--profile VALUE] [--osrm-base-url VALUE] [--from VALUE] [--to VALUE] [--radius METRES]
+GoTravel route-match inspect [--db gotravel.sqlite] <run-id>
+GoTravel route-match export [--db gotravel.sqlite] [--force] geojson <run-id> <output.geojson|->
+```
+
+### Route Matching Arguments
+
+```text
+<run-id>            Stored route_match_runs ID.
+<output.geojson>    GeoJSON output file path.
+-                   Write GeoJSON to stdout.
+```
+
+### Route Matching Options
+
+```text
+--db PATH             SQLite database path. Defaults to gotravel.sqlite.
+--provider NAME       Routing provider. Defaults to noop.
+--profile VALUE       Routing profile. Defaults to driving.
+--osrm-base-url URL   Base URL for OSRM when using the osrm provider.
+--from VALUE          Start date/time filter for source staged points.
+--to VALUE            Stop date/time filter for source staged points.
+--radius METRES       Optional route-match radius in metres.
+--force               Allow overwriting existing GeoJSON export files.
+```
+
+### Route Matching Behaviour
+
+`route-match run` loads staged points, applies optional date filters, runs the existing provider-neutral route-match runner, persists the result, and prints a concise stored-run summary.
+
+`route-match inspect` prints a stored-run summary plus linked point count and timestamps.
+
+`route-match export geojson` writes a GeoJSON Feature only when the stored geometry is already GeoJSON. It does not convert encoded polyline or other provider-specific geometry formats.
+
 ## Safety Rules
 
 - Never overwrite an existing output file unless `--force` is provided.
@@ -130,6 +167,7 @@ It does not perform route matching, trip segmentation, dwell-time calculation, o
 - Never silently ignore corrupt input.
 - Never silently change command syntax.
 - Database import/export commands must not transform staged rows.
+- Route-match commands must keep provider-specific behaviour behind the routing provider layer.
 
 ## Reserved Future Commands
 
