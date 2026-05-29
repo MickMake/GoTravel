@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Added `GoTravel route-match run` to route-match staged points through the existing provider-neutral runner.
+- Added route-match provider/profile/date-filter/radius CLI options, including OSRM base URL wiring through the provider factory.
+- Added `GoTravel route-match inspect` for stored route-match run summaries.
+- Added `GoTravel route-match export geojson` for stored matched geometry that is already GeoJSON.
+- Added route-match CLI helper tests without requiring a live OSRM server.
+- Documented route-match commands and updated routing enrichment status.
 - Added OSRM provider usage examples and an interface conformance check.
 - Added a provider-neutral routing framework with providers (`noop`, `ors`, `osrm`, `valhalla`), shared routing contracts/types, and registry/tests.
 - Implemented the OSRM HTTP provider client for health, route, trace matching, snapping, and matrix operations using provider-neutral result types and preserved raw responses.

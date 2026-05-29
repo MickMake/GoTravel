@@ -18,13 +18,15 @@ Implemented building blocks:
 - `route_match_runs` stores provider-neutral route match run results.
 - `route_match_points` links persisted route match runs back to source point IDs in sequence.
 - `storage.RouteMatchRunner` loads staged points, builds a trace request, calls the enricher, converts the result, and persists the route match run.
+- `GoTravel route-match run` wires the runner into the CLI with provider, profile, date filter, and radius options.
+- `GoTravel route-match inspect` prints stored route-match run summaries.
+- `GoTravel route-match export geojson` exports stored matched geometry when the stored geometry is already GeoJSON.
 
 Not implemented yet:
 
-- No CLI route-matching command.
-- No export/report of matched route data.
 - No automatic trip segmentation.
 - No GPX export of matched geometry.
+- No conversion from encoded polyline or provider-specific geometry into GeoJSON.
 
 ## Data flow
 
@@ -98,6 +100,16 @@ Fields:
 - `point_id`
 - `sequence`
 
+## CLI workflow
+
+```bash
+GoTravel route-match run --provider noop --profile driving
+GoTravel route-match inspect 1
+GoTravel route-match export geojson 1 matched.geojson
+```
+
+The run command prints the stored run ID, provider, profile, status, source point count, distance, duration, and geometry format.
+
 ## Deferred storage decisions
 
 The current schema intentionally keeps matched geometry and raw response inline with `route_match_runs`.
@@ -110,7 +122,7 @@ Revisit this if:
 4. warnings need queryable rows instead of JSON text.
 5. matched runs need explicit immutability/version metadata.
 
-## Non-goals for the next CLI PR
+## Non-goals for the current CLI/export work
 
 Do not add:
 
@@ -123,7 +135,7 @@ Do not add:
 
 ## Recommended next implementation sequence
 
-1. Add a CLI route-match command that uses the existing internal runner.
-2. Add clear command documentation and safety notes.
-3. Test with real-ish staged data against a local OSRM instance manually, outside unit tests.
-4. Add export/report features only after persisted route match runs are proven useful.
+1. Manually test route matching with real-ish staged data against a local OSRM instance.
+2. Add geometry conversion if a provider stores encoded polyline or another non-GeoJSON geometry format.
+3. Add matched GPX export only after stored geometry behaviour is proven useful.
+4. Add reporting/trip segmentation later, as separate work.
