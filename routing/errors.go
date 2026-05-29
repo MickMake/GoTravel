@@ -8,4 +8,5 @@ var (
 	ErrProviderUnavailable = errors.New("routing: provider unavailable")
 	ErrMissingProviderName = errors.New("routing: missing provider name")
 	ErrNilProvider         = errors.New("routing: nil provider")
+	ErrNilService          = errors.New("routing: nil service")
 )
