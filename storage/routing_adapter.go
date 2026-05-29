@@ -2,7 +2,6 @@ package storage
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/MickMake/GoTravel/routing"
 )
@@ -51,6 +50,3 @@ func validateCoordinate(index int, lat, lng float64) error {
 	}
 	return nil
 }
-
-// ensure time.Time stays referenced by this file's public conversion contract.
-var _ = time.Time{}
