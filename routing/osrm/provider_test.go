@@ -74,6 +74,17 @@ func TestRouteBuildsRequestParsesResultAndPreservesRaw(t *testing.T) {
 	}
 }
 
+func TestRouteRejectsSameStartAndEnd(t *testing.T) {
+	p := NewWithConfig(Config{BaseURL: "http://example.invalid"})
+	_, err := p.Route(context.Background(), routing.RouteRequest{
+		Start: routing.Coordinate{Lat: -33.8, Lng: 151.2},
+		End:   routing.Coordinate{Lat: -33.8, Lng: 151.2},
+	})
+	if err == nil || !strings.Contains(err.Error(), "start and end coordinates must differ") {
+		t.Fatalf("Route() err=%v", err)
+	}
+}
+
 func TestMatchTraceBuildsTimestampsAndRadiuses(t *testing.T) {
 	confidence := 0.87
 	raw := `{"code":"Ok","matchings":[{"geometry":"matched","distance":200.5,"duration":42.25,"confidence":0.87}]}`
@@ -105,6 +116,14 @@ func TestMatchTraceBuildsTimestampsAndRadiuses(t *testing.T) {
 	}
 	if result.Confidence == nil || *result.Confidence != confidence {
 		t.Fatalf("confidence=%v", result.Confidence)
+	}
+}
+
+func TestMatchTraceRejectsTooFewPoints(t *testing.T) {
+	p := NewWithConfig(Config{BaseURL: "http://example.invalid"})
+	_, err := p.MatchTrace(context.Background(), routing.MatchTraceRequest{Points: []routing.TracePoint{{Coordinate: routing.Coordinate{Lat: -33.8, Lng: 151.2}}}})
+	if err == nil || !strings.Contains(err.Error(), "at least two trace points") {
+		t.Fatalf("MatchTrace() err=%v", err)
 	}
 }
 
@@ -153,7 +172,7 @@ func TestSnapSupportsMultipleCoordinatesWithNearestRequests(t *testing.T) {
 }
 
 func TestMatrixBuildsTableRequestAndParsesMatrices(t *testing.T) {
-	raw := `{"code":"Ok","durations":[[1,2],[3,4]],"distances":[[10,20],[30,40]]}`
+	raw := `{"code":"Ok","durations":[[1],[3]],"distances":[[10],[30]]}`
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/table/v1/driving/151.2,-33.8;151.3,-33.9;151.4,-34" {
 			t.Fatalf("path=%q", r.URL.Path)
@@ -182,11 +201,43 @@ func TestMatrixBuildsTableRequestAndParsesMatrices(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Matrix() err=%v", err)
 	}
-	if result.DurationMatrix[1][0] != 3 || result.DistanceMatrix[1][1] != 40 {
+	if result.DurationMatrix[1][0] != 3 || result.DistanceMatrix[1][0] != 30 {
 		t.Fatalf("unexpected matrices: %+v %+v", result.DurationMatrix, result.DistanceMatrix)
 	}
 	if string(result.RawResponse) != raw {
 		t.Fatalf("raw response not preserved: %s", string(result.RawResponse))
+	}
+}
+
+func TestMatrixRejectsEmptySourcesOrDestinations(t *testing.T) {
+	p := NewWithConfig(Config{BaseURL: "http://example.invalid"})
+	_, err := p.Matrix(context.Background(), routing.MatrixRequest{Destinations: []routing.Coordinate{{Lat: -34, Lng: 151.4}}})
+	if err == nil || !strings.Contains(err.Error(), "at least one source") {
+		t.Fatalf("Matrix() missing source err=%v", err)
+	}
+	_, err = p.Matrix(context.Background(), routing.MatrixRequest{Sources: []routing.Coordinate{{Lat: -33.8, Lng: 151.2}}})
+	if err == nil || !strings.Contains(err.Error(), "at least one destination") {
+		t.Fatalf("Matrix() missing destination err=%v", err)
+	}
+}
+
+func TestMatrixRejectsUnexpectedDimensions(t *testing.T) {
+	raw := `{"code":"Ok","durations":[[1,2],[3,4]],"distances":[[10,20],[30,40]]}`
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte(raw))
+	}))
+	defer server.Close()
+
+	p := NewWithConfig(Config{BaseURL: server.URL})
+	_, err := p.Matrix(context.Background(), routing.MatrixRequest{
+		Sources: []routing.Coordinate{
+			{Lat: -33.8, Lng: 151.2},
+			{Lat: -33.9, Lng: 151.3},
+		},
+		Destinations: []routing.Coordinate{{Lat: -34, Lng: 151.4}},
+	})
+	if err == nil || !strings.Contains(err.Error(), "duration matrix row 0 has 2 columns, want 1") {
+		t.Fatalf("Matrix() err=%v", err)
 	}
 }
 
@@ -198,7 +249,7 @@ func TestRouteProviderStatusErrorPreservesRawAndWarning(t *testing.T) {
 	defer server.Close()
 
 	p := NewWithConfig(Config{BaseURL: server.URL})
-	result, err := p.Route(context.Background(), routing.RouteRequest{})
+	result, err := p.Route(context.Background(), routing.RouteRequest{Start: routing.Coordinate{Lat: -33.8, Lng: 151.2}, End: routing.Coordinate{Lat: -33.9, Lng: 151.3}})
 	if err == nil {
 		t.Fatal("Route() err=nil")
 	}

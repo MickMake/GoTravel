@@ -4,7 +4,8 @@
 
 - Added a provider-neutral routing framework with providers (`noop`, `ors`, `osrm`, `valhalla`), shared routing contracts/types, and registry/tests.
 - Implemented the OSRM HTTP provider client for health, route, trace matching, snapping, and matrix operations using provider-neutral result types and preserved raw responses.
-- Added `httptest` coverage for OSRM URL construction, response parsing, raw response preservation, and error handling without requiring a live OSRM server.
+- Hardened OSRM provider validation for route, trace-matching, and matrix requests, including matrix response dimension checks.
+- Added `httptest` coverage for OSRM URL construction, response parsing, raw response preservation, request validation, matrix dimensions, and error handling without requiring a live OSRM server.
 - Documented Valhalla as a planned routing provider alongside OpenRouteService and OSRM.
 - Clarified that the core routing interface should expose only operations shared by all supported routing providers.
 

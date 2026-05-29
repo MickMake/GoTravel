@@ -77,12 +77,17 @@ func (p *Provider) Capabilities(ctx context.Context) routing.Capabilities {
 
 func (p *Provider) Route(ctx context.Context, req routing.RouteRequest) (routing.RouteResult, error) {
 	profile := p.profileFor(req.Profile)
+	result := routing.RouteResult{Provider: Name, Profile: profile, GeometryFormat: defaultGeometryFormat}
+	if req.Start == req.End {
+		return result, fmt.Errorf("osrm route: start and end coordinates must differ")
+	}
+
 	query := url.Values{
 		"overview":   []string{"full"},
 		"geometries": []string{defaultGeometryFormat},
 	}
 	raw, err := p.get(ctx, "route", profile, []routing.Coordinate{req.Start, req.End}, query)
-	result := routing.RouteResult{Provider: Name, Profile: profile, GeometryFormat: defaultGeometryFormat, RawResponse: raw}
+	result.RawResponse = raw
 	if err != nil {
 		return result, err
 	}
@@ -109,6 +114,11 @@ func (p *Provider) Route(ctx context.Context, req routing.RouteRequest) (routing
 
 func (p *Provider) MatchTrace(ctx context.Context, req routing.MatchTraceRequest) (routing.MatchTraceResult, error) {
 	profile := p.profileFor(req.Profile)
+	result := routing.MatchTraceResult{Provider: Name, Profile: profile, GeometryFormat: defaultGeometryFormat}
+	if len(req.Points) < 2 {
+		return result, fmt.Errorf("osrm match: at least two trace points are required")
+	}
+
 	coords := make([]routing.Coordinate, 0, len(req.Points))
 	for _, point := range req.Points {
 		coords = append(coords, point.Coordinate)
@@ -125,7 +135,7 @@ func (p *Provider) MatchTrace(ctx context.Context, req routing.MatchTraceRequest
 	}
 
 	raw, err := p.get(ctx, "match", profile, coords, query)
-	result := routing.MatchTraceResult{Provider: Name, Profile: profile, GeometryFormat: defaultGeometryFormat, RawResponse: raw}
+	result.RawResponse = raw
 	if err != nil {
 		return result, err
 	}
@@ -191,6 +201,14 @@ func (p *Provider) Snap(ctx context.Context, req routing.SnapRequest) (routing.S
 
 func (p *Provider) Matrix(ctx context.Context, req routing.MatrixRequest) (routing.MatrixResult, error) {
 	profile := p.profileFor(req.Profile)
+	result := routing.MatrixResult{Provider: Name, Profile: profile}
+	if len(req.Sources) == 0 {
+		return result, fmt.Errorf("osrm matrix: at least one source coordinate is required")
+	}
+	if len(req.Destinations) == 0 {
+		return result, fmt.Errorf("osrm matrix: at least one destination coordinate is required")
+	}
+
 	coords := append([]routing.Coordinate{}, req.Sources...)
 	coords = append(coords, req.Destinations...)
 	query := url.Values{
@@ -199,7 +217,7 @@ func (p *Provider) Matrix(ctx context.Context, req routing.MatrixRequest) (routi
 		"destinations": []string{indexList(len(req.Sources), len(req.Destinations))},
 	}
 	raw, err := p.get(ctx, "table", profile, coords, query)
-	result := routing.MatrixResult{Provider: Name, Profile: profile, RawResponse: raw}
+	result.RawResponse = raw
 	if err != nil {
 		return result, err
 	}
@@ -220,6 +238,12 @@ func (p *Provider) Matrix(ctx context.Context, req routing.MatrixRequest) (routi
 	}
 	distances, err := matrixValues("distance", parsed.Distances)
 	if err != nil {
+		return result, err
+	}
+	if err := validateMatrixDimensions("duration", durations, len(req.Sources), len(req.Destinations)); err != nil {
+		return result, err
+	}
+	if err := validateMatrixDimensions("distance", distances, len(req.Sources), len(req.Destinations)); err != nil {
 		return result, err
 	}
 	result.DurationMatrix = durations
@@ -370,6 +394,18 @@ func matrixValues(name string, values [][]*float64) ([][]float64, error) {
 		}
 	}
 	return matrix, nil
+}
+
+func validateMatrixDimensions(name string, matrix [][]float64, sources, destinations int) error {
+	if len(matrix) != sources {
+		return fmt.Errorf("osrm matrix: %s matrix has %d rows, want %d", name, len(matrix), sources)
+	}
+	for i, row := range matrix {
+		if len(row) != destinations {
+			return fmt.Errorf("osrm matrix: %s matrix row %d has %d columns, want %d", name, i, len(row), destinations)
+		}
+	}
+	return nil
 }
 
 type routeResponse struct {
