@@ -7,21 +7,21 @@ This file defines the intended command-line interface. If code behaviour differs
 ```bash
 GoTravel db init [--db gotravel.sqlite] [--force]
 GoTravel db verify [--db gotravel.sqlite]
-GoTravel db export [--db gotravel.sqlite] [--force] <filename>
-GoTravel db import [--db gotravel.sqlite] [--force] <filename>
+GoTravel db export [--db gotravel.sqlite] [--force] filename
+GoTravel db import [--db gotravel.sqlite] [--force] filename
 ```
 
 ### Database Arguments
 
 ```text
-<filename>   SQLite database file to export to or import from.
+filename   SQLite database file to export to or import from.
 ```
 
 ### Database Options
 
 ```text
 --db PATH     SQLite database path. Defaults to gotravel.sqlite.
---force       Allow destructive/overwrite behaviour where applicable.
+--force       Allow destructive or overwrite behaviour where applicable.
 ```
 
 ### Database Behaviour
@@ -30,23 +30,23 @@ GoTravel db import [--db gotravel.sqlite] [--force] <filename>
 
 `GoTravel db verify` validates that the configured database is a usable SQLite database and contains the required GoTravel tables.
 
-`GoTravel db export <filename>` copies the whole configured SQLite database to `<filename>`. It refuses to overwrite an existing output file unless `--force` is supplied. It does not apply GPS date filters and does not transform rows.
+`GoTravel db export filename` copies the whole configured SQLite database to `filename`. It refuses to overwrite an existing output file unless `--force` is supplied. It does not apply GPS date filters and does not transform rows.
 
-`GoTravel db import <filename>` restores/copies a whole GoTravel SQLite database into the configured database path. It validates the input as a usable GoTravel database and refuses to overwrite an existing target unless `--force` is supplied. It does not merge or transform rows.
+`GoTravel db import filename` restores or copies a whole GoTravel SQLite database into the configured database path. It validates the input as a usable GoTravel database and refuses to overwrite an existing target unless `--force` is supplied. It does not merge or transform rows.
 
 ## Import
 
 ```bash
-GoTravel import [--db gotravel.sqlite] [--force] <gator|google> <input.csv> [...]
-GoTravel import [--db gotravel.sqlite] [--force] <gator|google> -
+GoTravel import [--db gotravel.sqlite] [--force] gator input.csv
+GoTravel import [--db gotravel.sqlite] [--force] gator -
 ```
 
 ### Import Arguments
 
 ```text
-<gator|google>   Import format. gator is active; google is reserved.
-<input.csv>      One or more CSV files to import.
--                Read CSV from stdin.
+gator or google   Import format. gator is active; google is reserved.
+input.csv         One or more CSV files to import.
+-                 Read CSV from stdin.
 ```
 
 ### Import Options
@@ -63,28 +63,29 @@ Without `--force`:
 - Abort on first corrupt row.
 - Roll back the current file import.
 - Report file, line, and error.
-- Do not silently skip bad data.
+- Do not skip bad data.
 
 With `--force`:
 
 - Skip corrupt rows.
 - Store corrupt row details in `import_errors`.
 - Commit valid rows.
-- Report rows seen/imported/skipped.
+- Report rows seen, imported, and skipped.
 
 ## Export
 
 ```bash
-GoTravel export <gator|google|gpx> <output.csv|output.gpx|-> [--db gotravel.sqlite] [--force] [--start VALUE] [--stop VALUE]
+GoTravel export gator output.csv [--db gotravel.sqlite] [--force] [--start VALUE] [--stop VALUE]
+GoTravel export gpx output.gpx [--db gotravel.sqlite] [--force] [--start VALUE] [--stop VALUE]
 ```
 
 ### Export Arguments
 
 ```text
-<gator|google|gpx>   Export format. gator and gpx are active; google is reserved.
-<output.csv>         Output CSV file path for gator/google export.
-<output.gpx>         Output GPX file path for gpx export.
--                    Write to stdout.
+gator or google or gpx   Export format. gator and gpx are active; google is reserved.
+output.csv               Output CSV file path for gator/google export.
+output.gpx               Output GPX file path for gpx export.
+-                        Write to stdout.
 ```
 
 ### Export Options
@@ -127,16 +128,18 @@ It does not perform route matching, trip segmentation, dwell-time calculation, o
 
 ```bash
 GoTravel route-match run [--db gotravel.sqlite] [--provider noop|osrm] [--profile VALUE] [--osrm-base-url VALUE] [--from VALUE] [--to VALUE] [--radius METRES]
-GoTravel route-match inspect [--db gotravel.sqlite] <run-id>
-GoTravel route-match export [--db gotravel.sqlite] [--force] geojson <run-id> <output.geojson|->
+GoTravel route-match inspect [--db gotravel.sqlite] run-id
+GoTravel route-match export [--db gotravel.sqlite] [--force] geojson run-id output.geojson
+GoTravel route-match export [--db gotravel.sqlite] [--force] gpx run-id output.gpx
 ```
 
 ### Route Matching Arguments
 
 ```text
-<run-id>            Stored route_match_runs ID.
-<output.geojson>    GeoJSON output file path.
--                   Write GeoJSON to stdout.
+run-id          Stored route_match_runs ID.
+output.geojson  GeoJSON output file path.
+output.gpx      Matched-route GPX output file path.
+-               Write export output to stdout.
 ```
 
 ### Route Matching Options
@@ -149,7 +152,7 @@ GoTravel route-match export [--db gotravel.sqlite] [--force] geojson <run-id> <o
 --from VALUE          Start date/time filter for source staged points.
 --to VALUE            Stop date/time filter for source staged points.
 --radius METRES       Optional route-match radius in metres.
---force               Allow overwriting existing GeoJSON export files.
+--force               Allow overwriting existing route-match export files.
 ```
 
 ### Route Matching Behaviour
@@ -158,16 +161,20 @@ GoTravel route-match export [--db gotravel.sqlite] [--force] geojson <run-id> <o
 
 `route-match inspect` prints a stored-run summary plus linked point count and timestamps.
 
-`route-match export geojson` writes a GeoJSON Feature only when the stored geometry is already GeoJSON. It does not convert encoded polyline or other provider-specific geometry formats.
+`route-match export geojson` writes a GeoJSON Feature from a stored route-match run. It passes stored GeoJSON through and converts supported encoded polyline geometry to GeoJSON LineString.
+
+`route-match export gpx` writes matched route geometry as a GPX 1.1 track. It exports geometry only; it does not perform trip segmentation or attach original point timestamps to matched geometry.
+
+Supported stored geometry formats for route-match export are GeoJSON, encoded polyline precision 5, and encoded polyline precision 6. Unsupported formats return clear errors.
 
 ## Safety Rules
 
 - Never overwrite an existing output file unless `--force` is provided.
 - Never apply overwrite checks when output is `-`.
-- Never silently ignore corrupt input.
 - Never silently change command syntax.
 - Database import/export commands must not transform staged rows.
 - Route-match commands must keep provider-specific behaviour behind the routing provider layer.
+- Never silently ignore corrupt input.
 
 ## Reserved Future Commands
 

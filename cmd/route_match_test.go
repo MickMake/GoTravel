@@ -106,3 +106,52 @@ func TestWriteRouteMatchGeoJSON(t *testing.T) {
 		t.Fatalf("provider = %v, want noop", properties["provider"])
 	}
 }
+
+func TestWriteRouteMatchGeoJSONConvertsPolyline(t *testing.T) {
+	run := storage.RouteMatchRun{
+		ID: 10,
+		Trace: routing.EnrichedTrace{
+			Provider:       "osrm",
+			Profile:        "driving",
+			Status:         "ok",
+			Geometry:       "_p~iF~ps|U_ulLnnqC_mqNvxq`@",
+			GeometryFormat: "polyline",
+		},
+	}
+	var buf bytes.Buffer
+	if err := writeRouteMatchGeoJSON(&buf, run); err != nil {
+		t.Fatalf("writeRouteMatchGeoJSON returned error: %v", err)
+	}
+	out := buf.String()
+	if !strings.Contains(out, `"type": "LineString"`) || !strings.Contains(out, "-120.2") {
+		t.Fatalf("GeoJSON output did not include decoded LineString:\n%s", out)
+	}
+}
+
+func TestWriteRouteMatchGPX(t *testing.T) {
+	run := storage.RouteMatchRun{
+		ID: 11,
+		Trace: routing.EnrichedTrace{
+			Provider:       "osrm",
+			Profile:        "driving",
+			Status:         "ok",
+			Geometry:       `{"type":"LineString","coordinates":[[151.0,-33.0],[151.1,-33.1]]}`,
+			GeometryFormat: "geojson",
+		},
+	}
+	var buf bytes.Buffer
+	if err := writeRouteMatchGPX(&buf, run); err != nil {
+		t.Fatalf("writeRouteMatchGPX returned error: %v", err)
+	}
+	out := buf.String()
+	for _, want := range []string{
+		`<gpx version="1.1" creator="GoTravel"`,
+		`<name>GoTravel route match 11</name>`,
+		`<trkpt lat="-33.0000000" lon="151.0000000"></trkpt>`,
+		`<trkpt lat="-33.1000000" lon="151.1000000"></trkpt>`,
+	} {
+		if !strings.Contains(out, want) {
+			t.Fatalf("GPX output missing %q in:\n%s", want, out)
+		}
+	}
+}

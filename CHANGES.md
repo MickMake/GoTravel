@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Added provider-neutral route geometry conversion for stored GeoJSON, encoded polyline precision 5, and encoded polyline precision 6.
+- Updated `GoTravel route-match export geojson` to convert supported encoded polyline geometry into GeoJSON LineString output.
+- Added `GoTravel route-match export gpx` to export stored matched geometry as a GPX 1.1 track.
+- Added route geometry conversion and matched route export tests without requiring a live OSRM server.
 - Added `GoTravel route-match run` to route-match staged points through the existing provider-neutral runner.
 - Added route-match provider/profile/date-filter/radius CLI options, including OSRM base URL wiring through the provider factory.
 - Added `GoTravel route-match inspect` for stored route-match run summaries.

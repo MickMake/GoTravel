@@ -45,7 +45,7 @@ Usage:
   GoTravel export gator|google|gpx output [--db gotravel.sqlite] [--force] [--start value] [--stop value]
   GoTravel route-match run [--db gotravel.sqlite] [--provider noop|osrm] [--profile value] [--osrm-base-url url] [--from value] [--to value] [--radius meters]
   GoTravel route-match inspect [--db gotravel.sqlite] run-id
-  GoTravel route-match export [--db gotravel.sqlite] [--force] geojson run-id output
+  GoTravel route-match export [--db gotravel.sqlite] [--force] geojson|gpx run-id output
 `)
 	return nil
 }

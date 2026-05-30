@@ -20,13 +20,15 @@ Implemented building blocks:
 - `storage.RouteMatchRunner` loads staged points, builds a trace request, calls the enricher, converts the result, and persists the route match run.
 - `GoTravel route-match run` wires the runner into the CLI with provider, profile, date filter, and radius options.
 - `GoTravel route-match inspect` prints stored route-match run summaries.
-- `GoTravel route-match export geojson` exports stored matched geometry when the stored geometry is already GeoJSON.
+- `GoTravel route-match export geojson` exports stored matched geometry as a GeoJSON Feature.
+- `GoTravel route-match export gpx` exports stored matched geometry as a GPX 1.1 track.
+- `routing.RouteGeometryAsGeoJSON` and `routing.RouteGeometryCoordinates` convert stored GeoJSON, polyline, and polyline6 geometry into provider-neutral output shapes.
 
 Not implemented yet:
 
 - No automatic trip segmentation.
-- No GPX export of matched geometry.
-- No conversion from encoded polyline or provider-specific geometry into GeoJSON.
+- No matched-route timestamp interpolation.
+- No conversion for provider-specific geometry formats beyond GeoJSON, polyline, and polyline6.
 
 ## Data flow
 
@@ -106,9 +108,12 @@ Fields:
 GoTravel route-match run --provider noop --profile driving
 GoTravel route-match inspect 1
 GoTravel route-match export geojson 1 matched.geojson
+GoTravel route-match export gpx 1 matched.gpx
 ```
 
 The run command prints the stored run ID, provider, profile, status, source point count, distance, duration, and geometry format.
+
+The export commands accept stored GeoJSON, encoded polyline precision 5, and encoded polyline precision 6. Unsupported geometry formats fail with clear errors.
 
 ## Deferred storage decisions
 
@@ -129,13 +134,12 @@ Do not add:
 - automatic trip segmentation
 - dwell-time logic
 - UI/report generation
-- GPX export of matched routes
 - provider-specific database tables
 - live OSRM integration tests
 
 ## Recommended next implementation sequence
 
 1. Manually test route matching with real-ish staged data against a local OSRM instance.
-2. Add geometry conversion if a provider stores encoded polyline or another non-GeoJSON geometry format.
-3. Add matched GPX export only after stored geometry behaviour is proven useful.
+2. Confirm stored geometry format behaviour against actual OSRM responses.
+3. Add timestamp interpolation only if matched-route timing becomes necessary.
 4. Add reporting/trip segmentation later, as separate work.

@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"encoding/json"
+	"encoding/xml"
 	"flag"
 	"fmt"
 	"io"
@@ -21,6 +22,28 @@ type routeMatchCommonArgs struct {
 	provider    string
 	profile     string
 	osrmBaseURL string
+}
+
+type routeMatchGPXDocument struct {
+	XMLName xml.Name           `xml:"gpx"`
+	Version string             `xml:"version,attr"`
+	Creator string             `xml:"creator,attr"`
+	XMLNS   string             `xml:"xmlns,attr"`
+	Track   routeMatchGPXTrack `xml:"trk"`
+}
+
+type routeMatchGPXTrack struct {
+	Name    string               `xml:"name,omitempty"`
+	Segment routeMatchGPXSegment `xml:"trkseg"`
+}
+
+type routeMatchGPXSegment struct {
+	Points []routeMatchGPXPoint `xml:"trkpt"`
+}
+
+type routeMatchGPXPoint struct {
+	Lat string `xml:"lat,attr"`
+	Lon string `xml:"lon,attr"`
 }
 
 func runRouteMatch(args []string) error {
@@ -47,7 +70,7 @@ func routeMatchUsage() error {
 Usage:
   GoTravel route-match run [--db gotravel.sqlite] [--provider noop|osrm] [--profile value] [--osrm-base-url url] [--from value] [--to value] [--radius meters]
   GoTravel route-match inspect [--db gotravel.sqlite] <run-id>
-  GoTravel route-match export [--db gotravel.sqlite] [--force] geojson <run-id> <output.geojson|->
+  GoTravel route-match export [--db gotravel.sqlite] [--force] <geojson|gpx> <run-id> <output.geojson|output.gpx|->
 `)
 	return nil
 }
@@ -155,7 +178,7 @@ func runRouteMatchExport(args []string) error {
 		return fmt.Errorf("route-match export requires format, run ID, and output path")
 	}
 	format := strings.ToLower(fs.Arg(0))
-	if format != "geojson" {
+	if format != "geojson" && format != "gpx" {
 		return fmt.Errorf("unsupported route-match export format %q", format)
 	}
 	runID, err := parseRunID(fs.Arg(1))
@@ -181,7 +204,14 @@ func runRouteMatchExport(args []string) error {
 	if outputPath != "-" {
 		defer out.Close()
 	}
-	return writeRouteMatchGeoJSON(out, run)
+	switch format {
+	case "geojson":
+		return writeRouteMatchGeoJSON(out, run)
+	case "gpx":
+		return writeRouteMatchGPX(out, run)
+	default:
+		return fmt.Errorf("unsupported route-match export format %q", format)
+	}
 }
 
 func addRouteMatchCommonFlags(fs *flag.FlagSet) *routeMatchCommonArgs {
@@ -279,17 +309,48 @@ func writeRouteMatchGeoJSON(w io.Writer, run storage.RouteMatchRun) error {
 }
 
 func routeMatchGeoJSONGeometry(run storage.RouteMatchRun) (any, error) {
-	format := strings.ToLower(strings.TrimSpace(run.Trace.GeometryFormat))
-	geometry := strings.TrimSpace(run.Trace.Geometry)
-	if geometry == "" {
-		return nil, fmt.Errorf("route-match run %d has no geometry", run.ID)
+	geometry, err := routing.RouteGeometryAsGeoJSON(run.Trace.GeometryFormat, run.Trace.Geometry)
+	if err != nil {
+		return nil, fmt.Errorf("route-match run %d geometry cannot be exported as GeoJSON: %w", run.ID, err)
 	}
-	if strings.Contains(format, "geojson") || strings.HasPrefix(geometry, "{") {
-		var decoded any
-		if err := json.Unmarshal([]byte(geometry), &decoded); err != nil {
-			return nil, fmt.Errorf("route-match run %d geometry is not valid GeoJSON: %w", run.ID, err)
-		}
-		return decoded, nil
+	return geometry, nil
+}
+
+func writeRouteMatchGPX(w io.Writer, run storage.RouteMatchRun) error {
+	coordinates, err := routing.RouteGeometryCoordinates(run.Trace.GeometryFormat, run.Trace.Geometry)
+	if err != nil {
+		return fmt.Errorf("route-match run %d geometry cannot be exported as GPX: %w", run.ID, err)
 	}
-	return nil, fmt.Errorf("route-match run %d geometry format %q cannot be exported as GeoJSON yet", run.ID, run.Trace.GeometryFormat)
+	if len(coordinates) == 0 {
+		return fmt.Errorf("route-match run %d has no coordinates", run.ID)
+	}
+
+	doc := routeMatchGPXDocument{
+		Version: "1.1",
+		Creator: "GoTravel",
+		XMLNS:   "http://www.topografix.com/GPX/1/1",
+		Track: routeMatchGPXTrack{
+			Name:    fmt.Sprintf("GoTravel route match %d", run.ID),
+			Segment: routeMatchGPXSegment{Points: make([]routeMatchGPXPoint, 0, len(coordinates))},
+		},
+	}
+	for _, coordinate := range coordinates {
+		doc.Track.Segment.Points = append(doc.Track.Segment.Points, routeMatchGPXPoint{
+			Lat: fmt.Sprintf("%.7f", coordinate.Lat),
+			Lon: fmt.Sprintf("%.7f", coordinate.Lon),
+		})
+	}
+	if _, err := io.WriteString(w, xml.Header); err != nil {
+		return err
+	}
+	encoder := xml.NewEncoder(w)
+	encoder.Indent("", "  ")
+	if err := encoder.Encode(doc); err != nil {
+		return err
+	}
+	if err := encoder.Flush(); err != nil {
+		return err
+	}
+	_, err = io.WriteString(w, "\n")
+	return err
 }
