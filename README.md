@@ -15,14 +15,19 @@ Current focus:
 - Record corrupt rows when forced.
 - Export staged rows to CSV/stdout.
 - Export staged rows to GPX.
+- Run provider-neutral route matching over staged rows.
+- Inspect stored route-match runs.
+- Export stored matched geometry as GeoJSON when the stored geometry is already GeoJSON.
 
 Reserved for later:
 
 - Google import.
 - Audit export.
 - KML export.
-- OpenRouteService/OSRM/Valhalla route analysis.
+- Rich OpenRouteService/OSRM/Valhalla route analysis.
 - Reports and maps.
+- Automatic trip segmentation.
+- Matched GPX export.
 
 ## Commands
 
@@ -105,6 +110,28 @@ GoTravel export gpx output.gpx
 GoTravel export gpx output.gpx --start 2025-05 --stop 2025-06
 ```
 
+Run route matching over staged points:
+
+```bash
+GoTravel route-match run --provider noop --profile driving
+GoTravel route-match run --provider osrm --profile driving --osrm-base-url VALUE --from 2025-05 --to 2025-06
+GoTravel route-match run --provider osrm --profile driving --radius 25
+```
+
+Inspect a stored route-match run:
+
+```bash
+GoTravel route-match inspect 1
+```
+
+Export stored matched geometry as GeoJSON:
+
+```bash
+GoTravel route-match export geojson 1 matched.geojson
+GoTravel route-match export --force geojson 1 matched.geojson
+GoTravel route-match export geojson 1 -
+```
+
 Overwrite an existing output file:
 
 ```bash
@@ -124,6 +151,16 @@ dt,lat,lng,altitude,angle,speed,params
 
 It does not perform route matching, trip segmentation, dwell-time calculation, or provider calls.
 
+## Route Matching
+
+`GoTravel route-match run` loads staged points, optionally filters them by partial date/time values, sends them through the configured routing provider, and stores a provider-neutral `route_match_run`.
+
+The command prints a concise summary containing the stored run ID, provider, profile, status, source point count, distance, duration, and geometry format.
+
+`GoTravel route-match inspect` reads an existing stored run and prints its summary plus linked point count and timestamps.
+
+`GoTravel route-match export geojson` writes a GeoJSON feature for a stored run when the stored geometry is already GeoJSON. It deliberately does not convert encoded polyline or provider-specific geometry formats yet.
+
 ## Date Filters
 
 Supported date/time filters:
@@ -137,7 +174,7 @@ YYYY-MM-DD HH:MM
 YYYY-MM-DD HH:MM:SS
 ```
 
-For `--stop`, partial values include the full specified period. For example, `--stop "2025-05-02 13"` includes that full hour.
+For `--stop` and route-match `--to`, partial values include the full specified period. For example, `--stop "2025-05-02 13"` includes that full hour.
 
 ## Repository Layout
 
@@ -147,7 +184,7 @@ examples/   generic examples
 export/     exporting code
 import/     importing code
 profiles/   import/export profile files
-routing/    future OpenRouteService/OSRM/Valhalla support
+routing/    provider-neutral routing support
 storage/    SQLite and file handling
 tests/      tests and fixtures
 ```
