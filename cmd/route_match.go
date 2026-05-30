@@ -25,20 +25,20 @@ type routeMatchCommonArgs struct {
 }
 
 type routeMatchGPXDocument struct {
-	XMLName xml.Name               `xml:"gpx"`
-	Version string                 `xml:"version,attr"`
-	Creator string                 `xml:"creator,attr"`
-	XMLNS   string                 `xml:"xmlns,attr"`
-	Track   routeMatchGPXTrack     `xml:"trk"`
+	XMLName xml.Name           `xml:"gpx"`
+	Version string             `xml:"version,attr"`
+	Creator string             `xml:"creator,attr"`
+	XMLNS   string             `xml:"xmlns,attr"`
+	Track   routeMatchGPXTrack `xml:"trk"`
 }
 
 type routeMatchGPXTrack struct {
-	Name    string                  `xml:"name,omitempty"`
-	Segment routeMatchGPXSegment   `xml:"trkseg"`
+	Name    string               `xml:"name,omitempty"`
+	Segment routeMatchGPXSegment `xml:"trkseg"`
 }
 
 type routeMatchGPXSegment struct {
-	Points []routeMatchGPXPoint     `xml:"trkpt"`
+	Points []routeMatchGPXPoint `xml:"trkpt"`
 }
 
 type routeMatchGPXPoint struct {
@@ -219,7 +219,7 @@ func addRouteMatchCommonFlags(fs *flag.FlagSet) *routeMatchCommonArgs {
 	fs.StringVar(&common.dbPath, "db", "gotravel.sqlite", "SQLite database path")
 	fs.StringVar(&common.provider, "provider", "noop", "routing provider name")
 	fs.StringVar(&common.profile, "profile", "driving", "routing profile")
-	fs.StringVar(&common.osrmBaseURL, "osrm-base-url", "OSRM base URL")
+	fs.StringVar(&common.osrmBaseURL, "osrm-base-url", "", "OSRM base URL")
 	return common
 }
 
