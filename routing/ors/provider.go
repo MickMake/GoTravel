@@ -239,7 +239,7 @@ func (p *Provider) do(ctx context.Context, method, service, profile string, payl
 	defer resp.Body.Close()
 	responseBody, readErr := io.ReadAll(resp.Body)
 	if readErr != nil {
-		return responseBody, fmt.Errorf("ors %s: read response: %w", service, readErr)
+		return responseBody, fmt.Errorf("ors %s: read response: %w", readErr)
 	}
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		return responseBody, fmt.Errorf("ors %s: HTTP %d: %s", service, resp.StatusCode, strings.TrimSpace(string(responseBody)))
@@ -360,7 +360,10 @@ type orsRoute struct {
 	Geometry string     `json:"geometry"`
 	Summary  orsSummary `json:"summary"`
 }
-type orsSummary struct{ Distance, Duration float64 }
+type orsSummary struct {
+	Distance float64 `json:"distance"`
+	Duration float64 `json:"duration"`
+}
 type snapLocation struct{ Location []float64 `json:"location"` }
 type providerError struct {
 	Code    int    `json:"code"`
