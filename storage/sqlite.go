@@ -23,6 +23,7 @@ func Open(path string) (*DB, error) {
 	if err != nil {
 		return nil, err
 	}
+	db.SetMaxOpenConns(1)
 	store := &DB{db: db}
 	if err := store.enableForeignKeys(); err != nil {
 		db.Close()
