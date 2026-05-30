@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"encoding/xml"
@@ -197,6 +198,10 @@ func runRouteMatchExport(args []string) error {
 		return err
 	}
 
+	payload, err := renderRouteMatchExport(format, run)
+	if err != nil {
+		return err
+	}
 	out, err := storage.OpenOutputFile(outputPath, *force)
 	if err != nil {
 		return err
@@ -204,14 +209,25 @@ func runRouteMatchExport(args []string) error {
 	if outputPath != "-" {
 		defer out.Close()
 	}
+	_, err = out.Write(payload)
+	return err
+}
+
+func renderRouteMatchExport(format string, run storage.RouteMatchRun) ([]byte, error) {
+	var buf bytes.Buffer
 	switch format {
 	case "geojson":
-		return writeRouteMatchGeoJSON(out, run)
+		if err := writeRouteMatchGeoJSON(&buf, run); err != nil {
+			return nil, err
+		}
 	case "gpx":
-		return writeRouteMatchGPX(out, run)
+		if err := writeRouteMatchGPX(&buf, run); err != nil {
+			return nil, err
+		}
 	default:
-		return fmt.Errorf("unsupported route-match export format %q", format)
+		return nil, fmt.Errorf("unsupported route-match export format %q", format)
 	}
+	return buf.Bytes(), nil
 }
 
 func addRouteMatchCommonFlags(fs *flag.FlagSet) *routeMatchCommonArgs {
@@ -337,7 +353,7 @@ func writeRouteMatchGPX(w io.Writer, run storage.RouteMatchRun) error {
 	for _, coordinate := range coordinates {
 		doc.Track.Segment.Points = append(doc.Track.Segment.Points, routeMatchGPXPoint{
 			Lat: fmt.Sprintf("%.7f", coordinate.Lat),
-			Lon: fmt.Sprintf("%.7f", coordinate.Lon),
+			Lon: fmt.Sprintf("%.7f", coordinate.Lng),
 		})
 	}
 	if _, err := io.WriteString(w, xml.Header); err != nil {
