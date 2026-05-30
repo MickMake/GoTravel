@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Implemented the Valhalla HTTP provider client for health, route, trace matching, snapping, and matrix operations using provider-neutral result types and preserved raw responses.
+- Added minimal Valhalla provider factory config for base URL and profile selection.
+- Added `httptest` coverage for Valhalla request construction, response parsing, raw response preservation, validation, matrix dimensions, provider status errors, and HTTP errors without requiring a live Valhalla server.
 - Addressed PR review follow-ups for routing registry initialisation, route-match coordinate validation, SQLite foreign-key enforcement, noop route matching, and route-match export preflight validation.
 - Fixed route geometry conversion to reuse the shared routing coordinate type.
 - Added provider-neutral route geometry conversion for stored GeoJSON, encoded polyline precision 5, and encoded polyline precision 6.
