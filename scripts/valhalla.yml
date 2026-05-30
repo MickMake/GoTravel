@@ -1,0 +1,7 @@
+valhalla:
+  enabled: true
+  base_url: http://localhost:5001
+  costing: auto
+  timeout_seconds: 20
+  required: false
+
