@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"math"
 	"strings"
 	"testing"
 	"time"
@@ -74,17 +75,28 @@ func TestMatchTraceRequestFromPointsRejectsInvalidCoordinates(t *testing.T) {
 		{DT: time.Unix(1700000060, 0), Lat: -33.9, Lng: 151.3},
 	}
 
-	points := append([]Point(nil), base...)
-	points[1].Lat = 91
-	_, err := MatchTraceRequestFromPoints(points, MatchTraceOptions{})
-	if err == nil || !strings.Contains(err.Error(), "latitude") {
-		t.Fatalf("latitude err=%v", err)
+	cases := []struct {
+		name    string
+		lat     float64
+		lng     float64
+		message string
+	}{
+		{name: "latitude too high", lat: 91, lng: 151.3, message: "latitude"},
+		{name: "longitude too high", lat: -33.9, lng: 181, message: "longitude"},
+		{name: "latitude NaN", lat: math.NaN(), lng: 151.3, message: "latitude"},
+		{name: "longitude NaN", lat: -33.9, lng: math.NaN(), message: "longitude"},
+		{name: "latitude infinity", lat: math.Inf(1), lng: 151.3, message: "latitude"},
+		{name: "longitude infinity", lat: -33.9, lng: math.Inf(-1), message: "longitude"},
 	}
-
-	points = append([]Point(nil), base...)
-	points[1].Lng = 181
-	_, err = MatchTraceRequestFromPoints(points, MatchTraceOptions{})
-	if err == nil || !strings.Contains(err.Error(), "longitude") {
-		t.Fatalf("longitude err=%v", err)
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			points := append([]Point(nil), base...)
+			points[1].Lat = tc.lat
+			points[1].Lng = tc.lng
+			_, err := MatchTraceRequestFromPoints(points, MatchTraceOptions{})
+			if err == nil || !strings.Contains(err.Error(), tc.message) {
+				t.Fatalf("err=%v, want %q", err, tc.message)
+			}
+		})
 	}
 }
