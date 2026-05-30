@@ -239,7 +239,7 @@ func (p *Provider) do(ctx context.Context, method, service, profile string, payl
 	defer resp.Body.Close()
 	responseBody, readErr := io.ReadAll(resp.Body)
 	if readErr != nil {
-		return responseBody, fmt.Errorf("ors %s: read response: %w", readErr)
+		return responseBody, fmt.Errorf("ors %s: read response: %w", service, readErr)
 	}
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		return responseBody, fmt.Errorf("ors %s: HTTP %d: %s", service, resp.StatusCode, strings.TrimSpace(string(responseBody)))
