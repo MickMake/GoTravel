@@ -71,7 +71,7 @@ type fakeProvider struct {
 	name string
 }
 
-func (p *fakeProvider) Name() string { return p.name }
+func (p *fakeProvider) Name() string                     { return p.name }
 func (p *fakeProvider) Health(ctx context.Context) error { return nil }
 func (p *fakeProvider) Capabilities(ctx context.Context) Capabilities {
 	return Capabilities{Route: true, MatchTrace: true, Snap: true, Matrix: true}

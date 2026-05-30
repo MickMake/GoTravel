@@ -7,18 +7,18 @@ import (
 
 // EnrichedTrace is GoTravel's provider-neutral model for a matched GPS trace.
 type EnrichedTrace struct {
-	Provider        string
-	Profile         string
-	Status          string
+	Provider         string
+	Profile          string
+	Status           string
 	SourcePointCount int
-	Geometry        string
-	GeometryFormat  string
-	DistanceMeters  float64
-	DurationSeconds float64
-	Confidence      *float64
-	Warnings        []string
-	RawResponse     []byte
-	MatchedAt       time.Time
+	Geometry         string
+	GeometryFormat   string
+	DistanceMeters   float64
+	DurationSeconds  float64
+	Confidence       *float64
+	Warnings         []string
+	RawResponse      []byte
+	MatchedAt        time.Time
 }
 
 // EnrichedTraceFromMatchTraceResult creates an internal enriched-trace model from a provider result.

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Addressed PR review follow-ups for routing registry initialisation, route-match coordinate validation, SQLite foreign-key enforcement, noop route matching, and route-match export preflight validation.
+- Fixed route geometry conversion to reuse the shared routing coordinate type.
 - Added provider-neutral route geometry conversion for stored GeoJSON, encoded polyline precision 5, and encoded polyline precision 6.
 - Updated `GoTravel route-match export geojson` to convert supported encoded polyline geometry into GeoJSON LineString output.
 - Added `GoTravel route-match export gpx` to export stored matched geometry as a GPX 1.1 track.

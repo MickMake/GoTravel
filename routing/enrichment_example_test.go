@@ -35,7 +35,7 @@ type exampleProvider struct {
 	name string
 }
 
-func (p exampleProvider) Name() string { return p.name }
+func (p exampleProvider) Name() string                     { return p.name }
 func (p exampleProvider) Health(ctx context.Context) error { return nil }
 func (p exampleProvider) Capabilities(ctx context.Context) routing.Capabilities {
 	return routing.Capabilities{MatchTrace: true}

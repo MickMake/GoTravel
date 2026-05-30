@@ -30,6 +30,19 @@ func TestRegistryNamesSorted(t *testing.T) {
 	}
 }
 
+func TestRegistryZeroValueRegister(t *testing.T) {
+	var r routing.Registry
+	r.Register(noop.Name, func() routing.Provider { return noop.New() })
+
+	p, err := r.Get(noop.Name)
+	if err != nil {
+		t.Fatalf("unexpected err: %v", err)
+	}
+	if p.Name() != noop.Name {
+		t.Fatalf("name=%q want=%q", p.Name(), noop.Name)
+	}
+}
+
 func TestRegistryGetUnknown(t *testing.T) {
 	r := routing.NewRegistry()
 	_, err := r.Get("missing")

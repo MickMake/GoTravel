@@ -44,13 +44,13 @@ func TestPrintRouteMatchSummary(t *testing.T) {
 	run := storage.RouteMatchRun{
 		ID: 7,
 		Trace: routing.EnrichedTrace{
-			Provider:        "noop",
-			Profile:         "driving",
-			Status:          "ok",
+			Provider:         "noop",
+			Profile:          "driving",
+			Status:           "ok",
 			SourcePointCount: 3,
-			DistanceMeters:  12.3456,
-			DurationSeconds: 78.9,
-			GeometryFormat:  "geojson",
+			DistanceMeters:   12.3456,
+			DurationSeconds:  78.9,
+			GeometryFormat:   "geojson",
 		},
 	}
 	var buf bytes.Buffer
@@ -79,15 +79,15 @@ func TestWriteRouteMatchGeoJSON(t *testing.T) {
 		ID:        9,
 		CreatedAt: createdAt,
 		Trace: routing.EnrichedTrace{
-			Provider:        "noop",
-			Profile:         "driving",
-			Status:          "ok",
+			Provider:         "noop",
+			Profile:          "driving",
+			Status:           "ok",
 			SourcePointCount: 2,
-			Geometry:        `{"type":"LineString","coordinates":[[151.0,-33.0],[151.1,-33.1]]}`,
-			GeometryFormat:  "geojson",
-			DistanceMeters:  100,
-			DurationSeconds: 20,
-			MatchedAt:       matchedAt,
+			Geometry:         `{"type":"LineString","coordinates":[[151.0,-33.0],[151.1,-33.1]]}`,
+			GeometryFormat:   "geojson",
+			DistanceMeters:   100,
+			DurationSeconds:  20,
+			MatchedAt:        matchedAt,
 		},
 	}
 	var buf bytes.Buffer
@@ -125,6 +125,20 @@ func TestWriteRouteMatchGeoJSONConvertsPolyline(t *testing.T) {
 	out := buf.String()
 	if !strings.Contains(out, `"type": "LineString"`) || !strings.Contains(out, "-120.2") {
 		t.Fatalf("GeoJSON output did not include decoded LineString:\n%s", out)
+	}
+}
+
+func TestRenderRouteMatchExportRejectsUnsupportedGeometry(t *testing.T) {
+	run := storage.RouteMatchRun{
+		ID: 12,
+		Trace: routing.EnrichedTrace{
+			Geometry:       "abc",
+			GeometryFormat: "unsupported",
+		},
+	}
+	_, err := renderRouteMatchExport("geojson", run)
+	if err == nil || !strings.Contains(err.Error(), "unsupported route geometry format") {
+		t.Fatalf("err=%v, want unsupported geometry format", err)
 	}
 }
 

@@ -87,7 +87,7 @@ type runnerProvider struct {
 	pointCount int
 }
 
-func (p *runnerProvider) Name() string { return p.provider }
+func (p *runnerProvider) Name() string                     { return p.provider }
 func (p *runnerProvider) Health(ctx context.Context) error { return nil }
 func (p *runnerProvider) Capabilities(ctx context.Context) routing.Capabilities {
 	return routing.Capabilities{MatchTrace: true}

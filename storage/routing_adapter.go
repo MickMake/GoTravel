@@ -2,6 +2,7 @@ package storage
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/MickMake/GoTravel/routing"
 )
@@ -42,11 +43,21 @@ func MatchTraceRequestFromPoints(points []Point, options MatchTraceOptions) (rou
 }
 
 func validateCoordinate(index int, lat, lng float64) error {
+	if !isFinite(lat) {
+		return fmt.Errorf("storage routing adapter: point %d latitude %v is not finite", index, lat)
+	}
 	if lat < -90 || lat > 90 {
 		return fmt.Errorf("storage routing adapter: point %d latitude %v outside valid range", index, lat)
+	}
+	if !isFinite(lng) {
+		return fmt.Errorf("storage routing adapter: point %d longitude %v is not finite", index, lng)
 	}
 	if lng < -180 || lng > 180 {
 		return fmt.Errorf("storage routing adapter: point %d longitude %v outside valid range", index, lng)
 	}
 	return nil
+}
+
+func isFinite(value float64) bool {
+	return !math.IsNaN(value) && !math.IsInf(value, 0)
 }
