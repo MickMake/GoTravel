@@ -24,9 +24,9 @@ func TestDecodeEncodedPolylinePrecision5(t *testing.T) {
 		t.Fatalf("DecodeEncodedPolyline returned error: %v", err)
 	}
 	assertCoordinatesNear(t, coordinates, []Coordinate{
-		{Lon: -120.2, Lat: 38.5},
-		{Lon: -120.95, Lat: 40.7},
-		{Lon: -126.453, Lat: 43.252},
+		{Lng: -120.2, Lat: 38.5},
+		{Lng: -120.95, Lat: 40.7},
+		{Lng: -126.453, Lat: 43.252},
 	})
 }
 
@@ -50,8 +50,8 @@ func TestRouteGeometryAsGeoJSONPolyline5(t *testing.T) {
 
 func TestRouteGeometryAsGeoJSONPolyline6(t *testing.T) {
 	encoded := encodePolylineForTest([]Coordinate{
-		{Lon: 151.2093, Lat: -33.8688},
-		{Lon: 151.2152, Lat: -33.8568},
+		{Lng: 151.2093, Lat: -33.8688},
+		{Lng: 151.2152, Lat: -33.8568},
 	}, 6)
 	geometry, err := RouteGeometryAsGeoJSON("polyline6", encoded)
 	if err != nil {
@@ -63,11 +63,11 @@ func TestRouteGeometryAsGeoJSONPolyline6(t *testing.T) {
 	}
 	coordinates := object["coordinates"].([][]float64)
 	assertCoordinatesNear(t, []Coordinate{
-		{Lon: coordinates[0][0], Lat: coordinates[0][1]},
-		{Lon: coordinates[1][0], Lat: coordinates[1][1]},
+		{Lng: coordinates[0][0], Lat: coordinates[0][1]},
+		{Lng: coordinates[1][0], Lat: coordinates[1][1]},
 	}, []Coordinate{
-		{Lon: 151.2093, Lat: -33.8688},
-		{Lon: 151.2152, Lat: -33.8568},
+		{Lng: 151.2093, Lat: -33.8688},
+		{Lng: 151.2152, Lat: -33.8568},
 	})
 }
 
@@ -76,7 +76,7 @@ func TestRouteGeometryCoordinatesFromGeoJSONFeature(t *testing.T) {
 	if err != nil {
 		t.Fatalf("RouteGeometryCoordinates returned error: %v", err)
 	}
-	want := []Coordinate{{Lon: 151, Lat: -33}, {Lon: 151.1, Lat: -33.1}}
+	want := []Coordinate{{Lng: 151, Lat: -33}, {Lng: 151.1, Lat: -33.1}}
 	if !reflect.DeepEqual(coordinates, want) {
 		t.Fatalf("coordinates = %#v, want %#v", coordinates, want)
 	}
@@ -102,7 +102,7 @@ func assertCoordinatesNear(t *testing.T, got, want []Coordinate) {
 		t.Fatalf("coordinate count = %d, want %d", len(got), len(want))
 	}
 	for i := range got {
-		if math.Abs(got[i].Lon-want[i].Lon) > 0.000001 || math.Abs(got[i].Lat-want[i].Lat) > 0.000001 {
+		if math.Abs(got[i].Lng-want[i].Lng) > 0.000001 || math.Abs(got[i].Lat-want[i].Lat) > 0.000001 {
 			t.Fatalf("coordinate %d = %#v, want %#v", i, got[i], want[i])
 		}
 	}
@@ -111,15 +111,15 @@ func assertCoordinatesNear(t *testing.T, got, want []Coordinate) {
 func encodePolylineForTest(coordinates []Coordinate, precision int) string {
 	factor := math.Pow10(precision)
 	lastLat := 0
-	lastLon := 0
+	lastLng := 0
 	var b strings.Builder
 	for _, coordinate := range coordinates {
 		lat := int(math.Round(coordinate.Lat * factor))
-		lon := int(math.Round(coordinate.Lon * factor))
+		lng := int(math.Round(coordinate.Lng * factor))
 		encodePolylineValueForTest(&b, lat-lastLat)
-		encodePolylineValueForTest(&b, lon-lastLon)
+		encodePolylineValueForTest(&b, lng-lastLng)
 		lastLat = lat
-		lastLon = lon
+		lastLng = lng
 	}
 	return b.String()
 }
