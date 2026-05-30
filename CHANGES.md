@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Implemented the ORS HTTP provider client for health, route, trace matching, snapping, and matrix operations using provider-neutral result types and preserved raw responses.
+- Added minimal ORS provider factory config for base URL and profile selection.
+- Added `GoTravel route-match run --ors-base-url` wiring for live ORS route matching.
+- Added `httptest` coverage for ORS request construction, response parsing, raw response preservation, validation, matrix dimensions, provider status errors, and HTTP errors without requiring a live ORS server.
+- Documented ORS route-match usage in `COMMANDS.md` and `README.md`.
 - Added OSRM provider usage examples and an interface conformance check.
 - Added a provider-neutral routing framework with providers (`noop`, `ors`, `osrm`, `valhalla`), shared routing contracts/types, and registry/tests.
 - Implemented the OSRM HTTP provider client for health, route, trace matching, snapping, and matrix operations using provider-neutral result types and preserved raw responses.
