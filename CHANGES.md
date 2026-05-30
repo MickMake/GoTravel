@@ -7,6 +7,21 @@
 - Added `GoTravel route-match run --ors-base-url` wiring for live ORS route matching.
 - Added `httptest` coverage for ORS request construction, response parsing, raw response preservation, validation, matrix dimensions, provider status errors, and HTTP errors without requiring a live ORS server.
 - Documented ORS route-match usage in `COMMANDS.md` and `README.md`.
+- Implemented the Valhalla HTTP provider client for health, route, trace matching, snapping, and matrix operations using provider-neutral result types and preserved raw responses.
+- Added minimal Valhalla provider factory config for base URL and profile selection.
+- Added `httptest` coverage for Valhalla request construction, response parsing, raw response preservation, validation, matrix dimensions, provider status errors, and HTTP errors without requiring a live Valhalla server.
+- Addressed PR review follow-ups for routing registry initialisation, route-match coordinate validation, SQLite foreign-key enforcement, noop route matching, and route-match export preflight validation.
+- Fixed route geometry conversion to reuse the shared routing coordinate type.
+- Added provider-neutral route geometry conversion for stored GeoJSON, encoded polyline precision 5, and encoded polyline precision 6.
+- Updated `GoTravel route-match export geojson` to convert supported encoded polyline geometry into GeoJSON LineString output.
+- Added `GoTravel route-match export gpx` to export stored matched geometry as a GPX 1.1 track.
+- Added route geometry conversion and matched route export tests without requiring a live OSRM server.
+- Added `GoTravel route-match run` to route-match staged points through the existing provider-neutral runner.
+- Added route-match provider/profile/date-filter/radius CLI options, including OSRM base URL wiring through the provider factory.
+- Added `GoTravel route-match inspect` for stored route-match run summaries.
+- Added `GoTravel route-match export geojson` for stored matched geometry that is already GeoJSON.
+- Added route-match CLI helper tests without requiring a live OSRM server.
+- Documented route-match commands and updated routing enrichment status.
 - Added OSRM provider usage examples and an interface conformance check.
 - Added a provider-neutral routing framework with providers (`noop`, `ors`, `osrm`, `valhalla`), shared routing contracts/types, and registry/tests.
 - Implemented the OSRM HTTP provider client for health, route, trace matching, snapping, and matrix operations using provider-neutral result types and preserved raw responses.

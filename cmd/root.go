@@ -23,6 +23,8 @@ func run(args []string) error {
 		return runImport(args[1:])
 	case "export":
 		return runExport(args[1:])
+	case "route-match":
+		return runRouteMatch(args[1:])
 	case "help", "--help", "-h":
 		return usage()
 	default:
@@ -36,11 +38,14 @@ func usage() error {
 Usage:
   GoTravel db init [--db gotravel.sqlite] [--force]
   GoTravel db verify [--db gotravel.sqlite]
-  GoTravel db export [--db gotravel.sqlite] [--force] <filename>
-  GoTravel db import [--db gotravel.sqlite] [--force] <filename>
-  GoTravel import [--db gotravel.sqlite] [--force] <gator|google> <input.csv> [...]
-  GoTravel import [--db gotravel.sqlite] [--force] <gator|google> -
-  GoTravel export <gator|google|gpx> <output.csv|output.gpx|-> [--db gotravel.sqlite] [--force] [--start value] [--stop value]
+  GoTravel db export [--db gotravel.sqlite] [--force] file
+  GoTravel db import [--db gotravel.sqlite] [--force] file
+  GoTravel import [--db gotravel.sqlite] [--force] gator|google input.csv ...
+  GoTravel import [--db gotravel.sqlite] [--force] gator|google -
+  GoTravel export gator|google|gpx output [--db gotravel.sqlite] [--force] [--start value] [--stop value]
+  GoTravel route-match run [--db gotravel.sqlite] [--provider noop|osrm] [--profile value] [--osrm-base-url url] [--from value] [--to value] [--radius meters]
+  GoTravel route-match inspect [--db gotravel.sqlite] run-id
+  GoTravel route-match export [--db gotravel.sqlite] [--force] geojson|gpx run-id output
 `)
 	return nil
 }

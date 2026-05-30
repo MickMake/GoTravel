@@ -20,6 +20,9 @@ func (r *Registry) Register(name string, factory Factory) {
 	if r == nil || name == "" || factory == nil {
 		return
 	}
+	if r.factories == nil {
+		r.factories = make(map[string]Factory)
+	}
 	r.factories[name] = factory
 }
 
