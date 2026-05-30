@@ -128,6 +128,20 @@ func TestWriteRouteMatchGeoJSONConvertsPolyline(t *testing.T) {
 	}
 }
 
+func TestRenderRouteMatchExportRejectsUnsupportedGeometry(t *testing.T) {
+	run := storage.RouteMatchRun{
+		ID: 12,
+		Trace: routing.EnrichedTrace{
+			Geometry:       "abc",
+			GeometryFormat: "unsupported",
+		},
+	}
+	_, err := renderRouteMatchExport("geojson", run)
+	if err == nil || !strings.Contains(err.Error(), "unsupported route geometry format") {
+		t.Fatalf("err=%v, want unsupported geometry format", err)
+	}
+}
+
 func TestWriteRouteMatchGPX(t *testing.T) {
 	run := storage.RouteMatchRun{
 		ID: 11,
