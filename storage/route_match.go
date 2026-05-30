@@ -60,7 +60,7 @@ confidence, warnings_json, raw_response, matched_at, created_at, source_filter_s
 		nullFloat64(trace.Confidence),
 		string(warningsJSON),
 		trace.RawResponse,
-		trace.MatchedAt.Format(timeLayout),
+		trace.MatchedAt.UTC().Format(timeLayout),
 		createdAt.Format(timeLayout),
 		nullTime(sourceStart),
 		nullTime(sourceEnd),
@@ -134,10 +134,10 @@ FROM route_match_runs WHERE id = ?`, id)
 			return RouteMatchRun{}, err
 		}
 	}
-	if run.Trace.MatchedAt, err = time.ParseInLocation(timeLayout, matchedAt, time.Local); err != nil {
+	if run.Trace.MatchedAt, err = time.ParseInLocation(timeLayout, matchedAt, time.UTC); err != nil {
 		return RouteMatchRun{}, err
 	}
-	if run.CreatedAt, err = time.ParseInLocation(timeLayout, createdAt, time.Local); err != nil {
+	if run.CreatedAt, err = time.ParseInLocation(timeLayout, createdAt, time.UTC); err != nil {
 		return RouteMatchRun{}, err
 	}
 	if run.SourceFilterStart, err = parseNullTime(sourceStart); err != nil {
@@ -176,14 +176,14 @@ func nullTime(value *time.Time) sql.NullString {
 	if value == nil {
 		return sql.NullString{}
 	}
-	return sql.NullString{String: value.Format(timeLayout), Valid: true}
+	return sql.NullString{String: value.UTC().Format(timeLayout), Valid: true}
 }
 
 func parseNullTime(value sql.NullString) (*time.Time, error) {
 	if !value.Valid || value.String == "" {
 		return nil, nil
 	}
-	parsed, err := time.ParseInLocation(timeLayout, value.String, time.Local)
+	parsed, err := time.ParseInLocation(timeLayout, value.String, time.UTC)
 	if err != nil {
 		return nil, err
 	}
