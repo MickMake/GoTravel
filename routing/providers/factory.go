@@ -28,7 +28,7 @@ func New(config Config) (routing.Provider, error) {
 	case "osrm":
 		return osrm.NewWithConfig(osrm.Config{BaseURL: config.OSRM.BaseURL, Profile: config.OSRM.Profile}), nil
 	case "valhalla":
-		return valhalla.New(), nil
+		return valhalla.NewWithConfig(valhalla.Config{BaseURL: config.Valhalla.BaseURL, Profile: config.Valhalla.Profile}), nil
 	default:
 		return nil, routing.ErrUnknownProvider
 	}
