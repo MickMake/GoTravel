@@ -40,7 +40,7 @@ type fakeEnrichmentProvider struct {
 	name string
 }
 
-func (p *fakeEnrichmentProvider) Name() string { return p.name }
+func (p *fakeEnrichmentProvider) Name() string                     { return p.name }
 func (p *fakeEnrichmentProvider) Health(ctx context.Context) error { return nil }
 func (p *fakeEnrichmentProvider) Capabilities(ctx context.Context) Capabilities {
 	return Capabilities{MatchTrace: true}

@@ -44,13 +44,13 @@ func TestPrintRouteMatchSummary(t *testing.T) {
 	run := storage.RouteMatchRun{
 		ID: 7,
 		Trace: routing.EnrichedTrace{
-			Provider:        "noop",
-			Profile:         "driving",
-			Status:          "ok",
+			Provider:         "noop",
+			Profile:          "driving",
+			Status:           "ok",
 			SourcePointCount: 3,
-			DistanceMeters:  12.3456,
-			DurationSeconds: 78.9,
-			GeometryFormat:  "geojson",
+			DistanceMeters:   12.3456,
+			DurationSeconds:  78.9,
+			GeometryFormat:   "geojson",
 		},
 	}
 	var buf bytes.Buffer
@@ -79,15 +79,15 @@ func TestWriteRouteMatchGeoJSON(t *testing.T) {
 		ID:        9,
 		CreatedAt: createdAt,
 		Trace: routing.EnrichedTrace{
-			Provider:        "noop",
-			Profile:         "driving",
-			Status:          "ok",
+			Provider:         "noop",
+			Profile:          "driving",
+			Status:           "ok",
 			SourcePointCount: 2,
-			Geometry:        `{"type":"LineString","coordinates":[[151.0,-33.0],[151.1,-33.1]]}`,
-			GeometryFormat:  "geojson",
-			DistanceMeters:  100,
-			DurationSeconds: 20,
-			MatchedAt:       matchedAt,
+			Geometry:         `{"type":"LineString","coordinates":[[151.0,-33.0],[151.1,-33.1]]}`,
+			GeometryFormat:   "geojson",
+			DistanceMeters:   100,
+			DurationSeconds:  20,
+			MatchedAt:        matchedAt,
 		},
 	}
 	var buf bytes.Buffer
