@@ -17,7 +17,8 @@ Current focus:
 - Export staged rows to GPX.
 - Run provider-neutral route matching over staged rows.
 - Inspect stored route-match runs.
-- Export stored matched geometry as GeoJSON when the stored geometry is already GeoJSON.
+- Export stored matched geometry as GeoJSON.
+- Export stored matched geometry as GPX.
 
 Reserved for later:
 
@@ -27,7 +28,6 @@ Reserved for later:
 - Rich OpenRouteService/OSRM/Valhalla route analysis.
 - Reports and maps.
 - Automatic trip segmentation.
-- Matched GPX export.
 
 ## Commands
 
@@ -132,6 +132,14 @@ GoTravel route-match export --force geojson 1 matched.geojson
 GoTravel route-match export geojson 1 -
 ```
 
+Export stored matched geometry as GPX:
+
+```bash
+GoTravel route-match export gpx 1 matched.gpx
+GoTravel route-match export --force gpx 1 matched.gpx
+GoTravel route-match export gpx 1 -
+```
+
 Overwrite an existing output file:
 
 ```bash
@@ -159,7 +167,11 @@ The command prints a concise summary containing the stored run ID, provider, pro
 
 `GoTravel route-match inspect` reads an existing stored run and prints its summary plus linked point count and timestamps.
 
-`GoTravel route-match export geojson` writes a GeoJSON feature for a stored run when the stored geometry is already GeoJSON. It deliberately does not convert encoded polyline or provider-specific geometry formats yet.
+`GoTravel route-match export geojson` writes a GeoJSON feature for a stored run. Stored GeoJSON is passed through, and supported encoded polyline geometry is converted to a GeoJSON LineString.
+
+`GoTravel route-match export gpx` writes matched route geometry as a GPX 1.1 track. It exports geometry only; it does not perform trip segmentation or attach original point timestamps to matched geometry.
+
+Supported stored geometry formats for route-match export are GeoJSON, encoded polyline precision 5, and encoded polyline precision 6.
 
 ## Date Filters
 
