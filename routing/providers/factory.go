@@ -24,7 +24,7 @@ func New(config Config) (routing.Provider, error) {
 	case "noop":
 		return noop.New(), nil
 	case "ors":
-		return ors.New(), nil
+		return ors.NewWithConfig(ors.Config{BaseURL: config.ORS.BaseURL, Profile: config.ORS.Profile}), nil
 	case "osrm":
 		return osrm.NewWithConfig(osrm.Config{BaseURL: config.OSRM.BaseURL, Profile: config.OSRM.Profile}), nil
 	case "valhalla":
