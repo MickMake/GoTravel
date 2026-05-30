@@ -174,6 +174,7 @@ Supported stored geometry formats for route-match export are GeoJSON, encoded po
 - Never silently change command syntax.
 - Database import/export commands must not transform staged rows.
 - Route-match commands must keep provider-specific behaviour behind the routing provider layer.
+- Never silently ignore corrupt input.
 
 ## Reserved Future Commands
 
