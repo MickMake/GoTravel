@@ -19,7 +19,7 @@ func TestRouteGeometryAsGeoJSONPassThrough(t *testing.T) {
 }
 
 func TestDecodeEncodedPolylinePrecision5(t *testing.T) {
-	coordinates, err := DecodeEncodedPolyline(`_p~iF~ps|U_ulLnnqC_mqNvxq`+"`"+`@`, 5)
+	coordinates, err := DecodeEncodedPolyline("_p~iF~ps|U_ulLnnqC_mqNvxq`@", 5)
 	if err != nil {
 		t.Fatalf("DecodeEncodedPolyline returned error: %v", err)
 	}
@@ -31,7 +31,7 @@ func TestDecodeEncodedPolylinePrecision5(t *testing.T) {
 }
 
 func TestRouteGeometryAsGeoJSONPolyline5(t *testing.T) {
-	geometry, err := RouteGeometryAsGeoJSON("encoded-polyline", `"`+`_p~iF~ps|U_ulLnnqC_mqNvxq`+"`"+`@`+`"`+`)
+	geometry, err := RouteGeometryAsGeoJSON("encoded-polyline", "_p~iF~ps|U_ulLnnqC_mqNvxq`@")
 	if err != nil {
 		t.Fatalf("RouteGeometryAsGeoJSON returned error: %v", err)
 	}
