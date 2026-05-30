@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Implemented the OpenRouteService HTTP provider client for route and matrix operations using provider-neutral result types and preserved raw responses.
+- Kept OpenRouteService health, snapping, and trace matching conservative/unimplemented until verified endpoint workflows are available; ORS directions remains route-through-waypoints, not trace/map matching.
+- Added minimal OpenRouteService provider factory config for base URL and profile selection.
+- Added `httptest` coverage for OpenRouteService defaults, capabilities, provider factory wiring, route request construction, GeoJSON response mapping, matrix request construction, matrix dimensions, raw response preservation, provider errors, HTTP errors, and explicit unimplemented snap/trace matching.
 - Implemented the Valhalla HTTP provider client for health, route, trace matching, snapping, and matrix operations using provider-neutral result types and preserved raw responses.
 - Added minimal Valhalla provider factory config for base URL and profile selection.
 - Added `httptest` coverage for Valhalla request construction, response parsing, raw response preservation, validation, matrix dimensions, provider status errors, and HTTP errors without requiring a live Valhalla server.
@@ -9,7 +13,7 @@
 - Fixed route geometry conversion to reuse the shared routing coordinate type.
 - Added provider-neutral route geometry conversion for stored GeoJSON, encoded polyline precision 5, and encoded polyline precision 6.
 - Updated `GoTravel route-match export geojson` to convert supported encoded polyline geometry into GeoJSON LineString output.
-- Added `GoTravel route-match export gpx` to export stored matched geometry as a GPX 1.1 track.
+- Added `GoTravel route-match export gpx` to export stored matched route geometry as a GPX 1.1 track.
 - Added route geometry conversion and matched route export tests without requiring a live OSRM server.
 - Added `GoTravel route-match run` to route-match staged points through the existing provider-neutral runner.
 - Added route-match provider/profile/date-filter/radius CLI options, including OSRM base URL wiring through the provider factory.

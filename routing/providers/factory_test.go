@@ -37,6 +37,20 @@ func TestNewNormalisesProviderName(t *testing.T) {
 	}
 }
 
+func TestNewWiresORSConfig(t *testing.T) {
+	provider, err := New(Config{Name: "ors", ORS: ORSConfig{BaseURL: "http://127.0.0.1:1234/ors", Profile: "foot-walking"}})
+	if err != nil {
+		t.Fatalf("New() err=%v", err)
+	}
+	result, err := provider.MatchTrace(nil, routing.MatchTraceRequest{})
+	if !errors.Is(err, routing.ErrNotImplemented) {
+		t.Fatalf("MatchTrace() err=%v want ErrNotImplemented", err)
+	}
+	if result.Profile != "foot-walking" {
+		t.Fatalf("profile=%q want foot-walking", result.Profile)
+	}
+}
+
 func TestNewRejectsMissingProviderName(t *testing.T) {
 	provider, err := New(Config{})
 	if provider != nil {
