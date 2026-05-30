@@ -8,12 +8,6 @@ import (
 	"unicode"
 )
 
-// Coordinate is a provider-neutral longitude/latitude pair.
-type Coordinate struct {
-	Lon float64
-	Lat float64
-}
-
 // RouteGeometryAsGeoJSON converts a stored route geometry into a GeoJSON geometry object.
 func RouteGeometryAsGeoJSON(format, geometry string) (any, error) {
 	geometry = strings.TrimSpace(geometry)
@@ -74,7 +68,7 @@ func DecodeEncodedPolyline(encoded string, precision int) ([]Coordinate, error) 
 	factor := math.Pow10(precision)
 	index := 0
 	lat := 0
-	lon := 0
+	lng := 0
 	coordinates := make([]Coordinate, 0)
 	for index < len(encoded) {
 		deltaLat, next, err := decodePolylineValue(encoded, index)
@@ -85,17 +79,17 @@ func DecodeEncodedPolyline(encoded string, precision int) ([]Coordinate, error) 
 		if index >= len(encoded) {
 			return nil, fmt.Errorf("malformed encoded polyline: missing longitude")
 		}
-		deltaLon, next, err := decodePolylineValue(encoded, index)
+		deltaLng, next, err := decodePolylineValue(encoded, index)
 		if err != nil {
 			return nil, err
 		}
 		index = next
 
 		lat += deltaLat
-		lon += deltaLon
+		lng += deltaLng
 		coordinates = append(coordinates, Coordinate{
-			Lon: float64(lon) / factor,
 			Lat: float64(lat) / factor,
+			Lng: float64(lng) / factor,
 		})
 	}
 	if len(coordinates) == 0 {
@@ -165,7 +159,7 @@ func lineStringGeometry(coordinates []Coordinate) map[string]any {
 func coordinatePairs(coordinates []Coordinate) [][]float64 {
 	pairs := make([][]float64, 0, len(coordinates))
 	for _, coordinate := range coordinates {
-		pairs = append(pairs, []float64{coordinate.Lon, coordinate.Lat})
+		pairs = append(pairs, []float64{coordinate.Lng, coordinate.Lat})
 	}
 	return pairs
 }
@@ -192,7 +186,7 @@ func coordinatesFromGeoJSON(value any) ([]Coordinate, error) {
 		if !ok || len(pair) < 2 {
 			return nil, fmt.Errorf("GeoJSON LineString coordinate must contain longitude and latitude")
 		}
-		lon, ok := pair[0].(float64)
+		lng, ok := pair[0].(float64)
 		if !ok {
 			return nil, fmt.Errorf("GeoJSON longitude must be numeric")
 		}
@@ -200,7 +194,7 @@ func coordinatesFromGeoJSON(value any) ([]Coordinate, error) {
 		if !ok {
 			return nil, fmt.Errorf("GeoJSON latitude must be numeric")
 		}
-		coordinates = append(coordinates, Coordinate{Lon: lon, Lat: lat})
+		coordinates = append(coordinates, Coordinate{Lat: lat, Lng: lng})
 	}
 	if len(coordinates) == 0 {
 		return nil, fmt.Errorf("GeoJSON LineString contains no coordinates")
