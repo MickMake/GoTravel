@@ -157,7 +157,9 @@ output.gpx      Matched-route GPX output file path.
 
 ### Route Matching Behaviour
 
-`route-match run` loads staged points, applies optional date filters, runs the existing provider-neutral route-match runner, persists the result, and prints a concise stored-run summary.
+`route-match run` loads staged points, applies optional date filters, removes exact consecutive duplicate coordinates, splits long traces into conservative 100-point chunks with one-point overlap, runs the provider-neutral route-match runner, persists one combined result, and prints a concise stored-run summary.
+
+When a run is split into chunks, successful chunk raw responses are stored together as a JSON array in the stored run raw response field.
 
 `route-match inspect` prints a stored-run summary plus linked point count and timestamps.
 
