@@ -25,6 +25,8 @@ func run(args []string) error {
 		return runExport(args[1:])
 	case "route-match":
 		return runRouteMatch(args[1:])
+	case "trips":
+		return runTrips(args[1:])
 	case "help", "--help", "-h":
 		return usage()
 	default:
@@ -46,6 +48,9 @@ Usage:
   GoTravel route-match run [--db gotravel.sqlite] [--provider noop|osrm] [--profile value] [--osrm-base-url url] [--from value] [--to value] [--radius meters]
   GoTravel route-match inspect [--db gotravel.sqlite] run-id
   GoTravel route-match export [--db gotravel.sqlite] [--force] geojson|gpx run-id output
+  GoTravel trips segment [--db gotravel.sqlite] [--gap-minutes 30] [--force]
+  GoTravel trips list [--db gotravel.sqlite]
+  GoTravel trips inspect [--db gotravel.sqlite] trip-id
 `)
 	return nil
 }

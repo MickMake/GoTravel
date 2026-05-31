@@ -169,6 +169,42 @@ When a run is split into chunks, successful chunk raw responses are stored toget
 
 Supported stored geometry formats for route-match export are GeoJSON, encoded polyline precision 5, and encoded polyline precision 6. Unsupported formats return clear errors.
 
+## Trips
+
+```bash
+GoTravel trips segment [--db gotravel.sqlite] [--gap-minutes 30] [--force]
+GoTravel trips list [--db gotravel.sqlite]
+GoTravel trips inspect [--db gotravel.sqlite] trip-id
+```
+
+### Trips Arguments
+
+```text
+trip-id   Stored trips ID.
+```
+
+### Trips Options
+
+```text
+--db PATH              SQLite database path. Defaults to gotravel.sqlite.
+--gap-minutes MINUTES  Gap threshold in minutes. Defaults to 30.
+--force                Delete and rebuild existing generated trips.
+```
+
+### Trips Behaviour
+
+`trips segment` loads staged points ordered by GPS timestamp and groups them into conservative trips using only the time gap between consecutive points.
+
+A new trip starts only when the gap is greater than the threshold. With the default threshold, a gap of more than 30 minutes starts a new trip; a gap of exactly 30 minutes stays in the current trip.
+
+Single-point groups are ignored. Stored trips preserve start time, end time, source point count, first point ID, last point ID, duration seconds, segmentation gap seconds, and ordered source point membership in `trip_points`.
+
+`trips segment` does not call routing providers, run route matching, infer stop names, infer jobs, classify business use, or perform dwell/location matching.
+
+Repeated segmentation fails if generated trips already exist. Use `--force` to delete existing trips and rebuild them from the current staged points.
+
+`trips list` prints persisted trip summaries. `trips inspect` prints one trip summary plus linked source point IDs.
+
 ## Safety Rules
 
 - Never overwrite an existing output file unless `--force` is provided.
