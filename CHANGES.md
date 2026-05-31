@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Added conservative staged-point trip segmentation using a default 30-minute gap threshold, stored trip summaries, and ordered `trip_points` membership.
+- Added `GoTravel trips segment`, `GoTravel trips list`, and `GoTravel trips inspect`, including repeat-run safety and `--force` rebuild behaviour.
+- Added trip segmentation, storage, schema, and command tests, and documented the trip commands in `COMMANDS.md` and `README.md`.
 - Added provider-neutral route-match trace hygiene to remove exact consecutive duplicate coordinates before provider calls while preserving staged point order and source point links.
 - Added conservative route-match trace chunking for long traces using 100-point chunks with one-point overlap.
 - Combined successful route-match chunks into one stored run with summed distance/duration, combined GeoJSON LineString geometry, and per-chunk raw provider responses stored as a JSON array.
