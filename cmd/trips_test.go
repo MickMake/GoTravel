@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -53,7 +54,7 @@ func TestRunTripsSegmentAndInspect(t *testing.T) {
 	if err := store.Close(); err != nil {
 		t.Fatalf("Close() after list err=%v", err)
 	}
-	if err := runTrips([]string{"inspect", "--db", dbPath, formatInt64ForTest(firstID)}); err != nil {
+	if err := runTrips([]string{"inspect", "--db", dbPath, strconv.FormatInt(firstID, 10)}); err != nil {
 		t.Fatalf("runTrips inspect err=%v", err)
 	}
 }
@@ -70,8 +71,4 @@ func TestRunTripsUnknownCommand(t *testing.T) {
 	if err == nil || !strings.Contains(err.Error(), "unknown trips command") {
 		t.Fatalf("err=%v", err)
 	}
-}
-
-func formatInt64ForTest(value int64) string {
-	return strings.TrimSpace(strings.ReplaceAll(strings.TrimPrefix(time.Unix(value, 0).UTC().Format("15:04:05"), "00:"), ":", ""))
 }
