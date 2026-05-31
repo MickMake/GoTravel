@@ -62,7 +62,7 @@
 
 ## 0.2
 
-- Split GoTravel into `cmd`, `import`, `export`, `routing`, `profiles`, and `storage` packages.
+- Split GoTravel into `cmd`, `import`, `export`, `routing`, `profiles`, `storage`, `examples`, and `tests`.
 - Renamed the routing concept to `routing` instead of `ors`.
 - Added canonical internal `Point` model.
 - Added source metadata: `source_file`, `source_line`, and `imported_at`.
