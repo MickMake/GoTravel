@@ -223,12 +223,25 @@ func (p *Provider) post(ctx context.Context, service, profile, suffix string, pa
 
 func (p *Provider) profileFor(profile string) string {
 	if profile != "" {
-		return profile
+		return normalizeProfile(profile)
 	}
 	if p != nil && p.profile != "" {
-		return p.profile
+		return normalizeProfile(p.profile)
 	}
 	return defaultProfile
+}
+
+func normalizeProfile(profile string) string {
+	switch profile {
+	case "driving", "car":
+		return "driving-car"
+	case "walking", "foot":
+		return "foot-walking"
+	case "cycling", "bike":
+		return "cycling-regular"
+	default:
+		return profile
+	}
 }
 
 func toORSCoordinate(coord routing.Coordinate) []float64 {

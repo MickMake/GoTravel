@@ -40,6 +40,55 @@ func TestNewWithConfigUsesConfig(t *testing.T) {
 	}
 }
 
+func TestProfileAliasesMapToORSProfiles(t *testing.T) {
+	tests := map[string]string{
+		"driving": "driving-car",
+		"car":     "driving-car",
+		"walking": "foot-walking",
+		"foot":    "foot-walking",
+		"cycling": "cycling-regular",
+		"bike":    "cycling-regular",
+	}
+	p := New()
+	for alias, want := range tests {
+		t.Run(alias, func(t *testing.T) {
+			result, err := p.MatchTrace(context.Background(), routing.MatchTraceRequest{Profile: alias})
+			if !errors.Is(err, routing.ErrNotImplemented) {
+				t.Fatalf("MatchTrace() err=%v want ErrNotImplemented", err)
+			}
+			if result.Profile != want {
+				t.Fatalf("profile=%q want %q", result.Profile, want)
+			}
+		})
+	}
+}
+
+func TestORSNativeProfilesPassThrough(t *testing.T) {
+	nativeProfiles := []string{"driving-car", "foot-walking", "cycling-regular", "wheelchair"}
+	p := New()
+	for _, profile := range nativeProfiles {
+		t.Run(profile, func(t *testing.T) {
+			result, err := p.MatchTrace(context.Background(), routing.MatchTraceRequest{Profile: profile})
+			if !errors.Is(err, routing.ErrNotImplemented) {
+				t.Fatalf("MatchTrace() err=%v want ErrNotImplemented", err)
+			}
+			if result.Profile != profile {
+				t.Fatalf("profile=%q want %q", result.Profile, profile)
+			}
+		})
+	}
+}
+
+func TestConfiguredProfileAliasMapsToORSProfile(t *testing.T) {
+	result, err := NewWithConfig(Config{Profile: "walking"}).MatchTrace(context.Background(), routing.MatchTraceRequest{})
+	if !errors.Is(err, routing.ErrNotImplemented) {
+		t.Fatalf("MatchTrace() err=%v want ErrNotImplemented", err)
+	}
+	if result.Profile != "foot-walking" {
+		t.Fatalf("profile=%q want foot-walking", result.Profile)
+	}
+}
+
 func TestCapabilitiesAreHonest(t *testing.T) {
 	caps := New().Capabilities(context.Background())
 	want := routing.Capabilities{Route: true, MatchTrace: false, Snap: false, Matrix: true}

@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Added OpenRouteService-local routing profile aliases for common neutral profile names while preserving ORS-native profile values unchanged.
 - Implemented the OpenRouteService HTTP provider client for route and matrix operations using provider-neutral result types and preserved raw responses.
 - Kept OpenRouteService health, snapping, and trace matching conservative/unimplemented until verified endpoint workflows are available; ORS directions remains route-through-waypoints, not trace/map matching.
 - Added minimal OpenRouteService provider factory config for base URL and profile selection.
