@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 )
 
-var requiredTables = []string{"points", "import_runs", "import_errors"}
+var requiredTables = []string{"points", "import_runs", "import_errors", "trips", "trip_points"}
 
 func InitDatabase(path string, force bool) error {
 	if path == "" {
