@@ -128,6 +128,36 @@ func TestWriteRouteMatchGeoJSONConvertsPolyline(t *testing.T) {
 	}
 }
 
+func TestRenderRouteMatchExportHandlesCombinedGeoJSONGeometry(t *testing.T) {
+	run := storage.RouteMatchRun{
+		ID: 13,
+		Trace: routing.EnrichedTrace{
+			Provider:         "osrm",
+			Profile:          "driving",
+			Status:           "Ok",
+			SourcePointCount: 101,
+			Geometry:         `{"type":"LineString","coordinates":[[151.0,-33.0],[151.1,-33.1],[151.2,-33.2]]}`,
+			GeometryFormat:   "geojson",
+		},
+	}
+
+	geojson, err := renderRouteMatchExport("geojson", run)
+	if err != nil {
+		t.Fatalf("renderRouteMatchExport geojson returned error: %v", err)
+	}
+	if !strings.Contains(string(geojson), `"source_point_count": 101`) || !strings.Contains(string(geojson), `151.2`) {
+		t.Fatalf("GeoJSON export missing combined geometry details:\n%s", string(geojson))
+	}
+
+	gpx, err := renderRouteMatchExport("gpx", run)
+	if err != nil {
+		t.Fatalf("renderRouteMatchExport gpx returned error: %v", err)
+	}
+	if !strings.Contains(string(gpx), `<trkpt lat="-33.2000000" lon="151.2000000"></trkpt>`) {
+		t.Fatalf("GPX export missing combined geometry point:\n%s", string(gpx))
+	}
+}
+
 func TestRenderRouteMatchExportRejectsUnsupportedGeometry(t *testing.T) {
 	run := storage.RouteMatchRun{
 		ID: 12,
