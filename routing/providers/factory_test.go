@@ -51,6 +51,20 @@ func TestNewWiresORSConfig(t *testing.T) {
 	}
 }
 
+func TestNewWiresORSProfileAliasConfig(t *testing.T) {
+	provider, err := New(Config{Name: "ors", ORS: ORSConfig{Profile: "cycling"}})
+	if err != nil {
+		t.Fatalf("New() err=%v", err)
+	}
+	result, err := provider.MatchTrace(nil, routing.MatchTraceRequest{})
+	if !errors.Is(err, routing.ErrNotImplemented) {
+		t.Fatalf("MatchTrace() err=%v want ErrNotImplemented", err)
+	}
+	if result.Profile != "cycling-regular" {
+		t.Fatalf("profile=%q want cycling-regular", result.Profile)
+	}
+}
+
 func TestNewRejectsMissingProviderName(t *testing.T) {
 	provider, err := New(Config{})
 	if provider != nil {
