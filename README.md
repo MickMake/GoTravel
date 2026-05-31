@@ -69,7 +69,7 @@ GoTravel import gator input1.csv input2.csv
 Import from stdin:
 
 ```bash
-cat input.csv | GoTravel import gator -
+GoTravel import gator - < input.csv
 ```
 
 Use a specific database:
@@ -161,7 +161,9 @@ It does not perform route matching, trip segmentation, dwell-time calculation, o
 
 ## Route Matching
 
-`GoTravel route-match run` loads staged points, optionally filters them by partial date/time values, sends them through the configured routing provider, and stores a provider-neutral `route_match_run`.
+`GoTravel route-match run` loads staged points, optionally filters them by partial date/time values, removes exact consecutive duplicate coordinates, chunks long traces conservatively at 100 points with one-point overlap, sends those chunks through the configured routing provider, and stores one provider-neutral `route_match_run`.
+
+For chunked runs, raw provider responses are stored together as a JSON array in the stored run raw response field.
 
 The command prints a concise summary containing the stored run ID, provider, profile, status, source point count, distance, duration, and geometry format.
 

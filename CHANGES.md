@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Added provider-neutral route-match trace hygiene to remove exact consecutive duplicate coordinates before provider calls while preserving staged point order and source point links.
+- Added conservative route-match trace chunking for long traces using 100-point chunks with one-point overlap.
+- Combined successful route-match chunks into one stored run with summed distance/duration, combined GeoJSON LineString geometry, and per-chunk raw provider responses stored as a JSON array.
+- Added route-match trace hygiene/chunking tests covering duplicate removal, chunk limits, overlap behaviour, combined geometry/metrics, and chunk failure storage safety.
 - Added OpenRouteService-local routing profile aliases for common neutral profile names while preserving ORS-native profile values unchanged.
 - Implemented the OpenRouteService HTTP provider client for route and matrix operations using provider-neutral result types and preserved raw responses.
 - Kept OpenRouteService health, snapping, and trace matching conservative/unimplemented until verified endpoint workflows are available; ORS directions remains route-through-waypoints, not trace/map matching.
