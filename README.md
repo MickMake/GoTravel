@@ -19,6 +19,7 @@ Current focus:
 - Inspect stored route-match runs.
 - Export stored matched geometry as GeoJSON.
 - Export stored matched geometry as GPX.
+- Segment staged points into conservative time-gap trips.
 
 Reserved for later:
 
@@ -27,7 +28,7 @@ Reserved for later:
 - KML export.
 - Rich OpenRouteService/OSRM/Valhalla route analysis.
 - Reports and maps.
-- Automatic trip segmentation.
+- Job, customer, site, dwell-time, or business-use inference.
 
 ## Commands
 
@@ -140,6 +141,21 @@ GoTravel route-match export --force gpx 1 matched.gpx
 GoTravel route-match export gpx 1 -
 ```
 
+Segment staged points into trips:
+
+```bash
+GoTravel trips segment
+GoTravel trips segment --gap-minutes 30
+GoTravel trips segment --force
+```
+
+List and inspect stored trips:
+
+```bash
+GoTravel trips list
+GoTravel trips inspect 1
+```
+
 Overwrite an existing output file:
 
 ```bash
@@ -174,6 +190,18 @@ The command prints a concise summary containing the stored run ID, provider, pro
 `GoTravel route-match export gpx` writes matched route geometry as a GPX 1.1 track. It exports geometry only; it does not perform trip segmentation or attach original point timestamps to matched geometry.
 
 Supported stored geometry formats for route-match export are GeoJSON, encoded polyline precision 5, and encoded polyline precision 6.
+
+## Trip Segmentation
+
+`GoTravel trips segment` loads staged points ordered by GPS timestamp and groups them into likely trips using only a time-gap rule.
+
+The default gap threshold is 30 minutes. A new trip starts only when the gap between consecutive points is greater than the threshold. A gap exactly equal to the threshold stays in the same trip.
+
+Single-point groups are ignored. Stored trips preserve start time, end time, source point count, first point ID, last point ID, duration seconds, segmentation gap seconds, and ordered point membership via `trip_points`.
+
+Repeated segmentation fails when trips already exist. Use `--force` to delete and rebuild generated trips from the current staged points.
+
+Trip segmentation does not call route providers, route-match traces, infer stop names, infer jobs, classify business use, match calendars, or argue with GPS goblins wearing tiny clipboards.
 
 ## Date Filters
 
